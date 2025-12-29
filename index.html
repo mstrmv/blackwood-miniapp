@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BLACKWOOD — Каталог</title>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0b0c;
+      color: #fff;
+    }
+    header {
+      padding: 16px;
+      border-bottom: 1px solid #222;
+    }
+    h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .wrap {
+      padding: 16px;
+    }
+    .card {
+      background: #141414;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid #222;
+    }
+    .title {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .price {
+      margin-bottom: 10px;
+      opacity: 0.9;
+    }
+    button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .add {
+      background: #fff;
+      color: #000;
+    }
+    .order {
+      background: #2a84ff;
+      color: #fff;
+      width: 100%;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>BLACKWOOD 🖤 Каталог</h1>
+</header>
+
+<div class="wrap">
+
+  <div class="card">
+    <div class="title">BLACKWOOD CORE — 3 кг</div>
+    <div class="price">499 грн</div>
+    <button class="add" onclick="add('BLACKWOOD CORE — 3 кг')">ADD</button>
+  </div>
+
+  <div class="card">
+    <div class="title">BLACKWOOD CORE — 5 кг</div>
+    <div class="price">499 грн</div>
+    <button class="add" onclick="add('BLACKWOOD CORE — 5 кг')">ADD</button>
+  </div>
+
+  <div class="card">
+    <div class="title">BLACKWOOD CORE — 8 кг</div>
+    <div class="price">499 грн</div>
+    <button class="add" onclick="add('BLACKWOOD CORE — 8 кг')">ADD</button>
+  </div>
+
+  <button class="order" onclick="sendOrder()">Оформити замовлення</button>
+</div>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  let items = [];
+
+  tg.ready();
+  tg.expand();
+
+  function add(name) {
+    items.push(name);
+    alert(name + " додано в кошик");
+  }
+
+  function sendOrder() {
+    if (items.length === 0) {
+      alert("Кошик порожній");
+      return;
+    }
+
+    const payload = {
+      items: items,
+      total: items.length * 499,
+      delivery: {
+        full_name: "ТЕСТ",
+        phone: "+380000000",
+        city: "Київ",
+        np_type: "Відділення",
+        np_point: "12"
+      }
+    };
+
+    tg.sendData(JSON.stringify(payload));
+    tg.close();
+  }
+</script>
+
+</body>
+</html>
