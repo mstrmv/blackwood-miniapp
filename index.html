@@ -68,10 +68,8 @@
     .thumb{
       height:140px;
       background:#0f0f11;
-      display:flex;
-      align-items:center;
-      justify-content:center;
       position:relative;
+      overflow:hidden;
     }
     .thumb img{
       width:100%;
@@ -90,6 +88,22 @@
       font-size:12px;
     }
     .badge.gold{border-color:rgba(200,164,90,.35);color:rgba(200,164,90,.98)}
+
+    /* Made in Ukraine watermark */
+    .made{
+      position:absolute;
+      right:10px;
+      bottom:10px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.5px;
+      color: rgba(255,255,255,.92);
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.18);
+      padding: 4px 8px;
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+    }
 
     .meta{padding:10px}
     .title{font-weight:1000;font-size:13px;line-height:1.2}
@@ -164,6 +178,7 @@
       transform: scale(1.02);
       transition: opacity .22s ease, transform .35s ease;
       opacity:1;
+      cursor:pointer;
     }
     .slide.is-fading{ opacity:0; transform: scale(1.01); }
     .nav{
@@ -196,6 +211,33 @@
       background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
       color:#000;
     }
+
+    /* Fullscreen gallery */
+    .fs{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.92);
+      display:none;
+      z-index:50;
+    }
+    .fs .top{
+      position:absolute; left:0; right:0; top:0;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px;
+      background: linear-gradient(180deg, rgba(0,0,0,.55), transparent);
+      z-index:2;
+    }
+    .fs .top .t{font-weight:900; color: rgba(255,255,255,.9); font-size:12px}
+    .fs .close{
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.35);
+      color:#fff;
+      width:40px;height:40px;
+      border-radius:14px;
+      font-size:22px;
+      cursor:pointer;
+    }
+    .fs img{width:100%;height:100%;object-fit:contain;display:block;transition:opacity .18s ease}
+    .fs img.is-fading{opacity:0}
 
     /* Checkout modal (NP) */
     .co-overlay{
@@ -285,6 +327,8 @@
       <button class="nav right" id="nextBtn">›</button>
 
       <div class="dots" id="dots"></div>
+
+      <div class="made">MADE IN UKRAINE</div>
     </div>
 
     <div class="pbody">
@@ -304,6 +348,15 @@
       <button class="addBig" id="addBtn">Додати в кошик</button>
     </div>
   </div>
+</div>
+
+<!-- Fullscreen gallery -->
+<div class="fs" id="fs">
+  <div class="top">
+    <div class="t" id="fsTitle">Фото 1/3</div>
+    <button class="close" id="fsClose">×</button>
+  </div>
+  <img id="fsImg" src="" alt="Фото товару">
 </div>
 
 <!-- Checkout modal -->
@@ -391,6 +444,7 @@
       name: "BLACKWOOD CORE — 3 кг",
       kg: 3,
       price: 499,
+      badge: "",
       desc: "Брикети з твердих порід. Для BBQ/гриля/копчення.",
       slides: ["images/core_3_1.png","images/core_3_2.png","images/core_3_3.png"]
     },
@@ -399,7 +453,8 @@
       name: "BLACKWOOD CORE — 5 кг",
       kg: 5,
       price: 499,
-      desc: "Оптимальний формат. Довге горіння, низька зольність.",
+      badge: "Хіт",
+      desc: "Найпопулярніший формат. Довге горіння, мінімум золи.",
       slides: ["images/core_5_1.png","images/core_5_2.png","images/core_5_3.png"]
     },
     {
@@ -407,29 +462,24 @@
       name: "BLACKWOOD CORE — 8 кг",
       kg: 8,
       price: 499,
-      desc: "Максимальний обʼєм для великої компанії або закладу.",
+      badge: "Вигідно",
+      desc: "Максимальний обʼєм для компанії або закладу.",
       slides: ["images/core_8_1.png","images/core_8_2.png","images/core_8_3.png"]
     }
   ];
 
-  // If you don't have some images yet, fallback to first slide
+  // Fallback: if some images are missing, we still work with first
   function safeSlides(arr){
     const ok = (arr || []).filter(Boolean);
-    if (ok.length === 0) return ["images/core_5_1.png"];
-    return ok;
+    return ok.length ? ok : ["images/core_5_1.png"];
   }
 
   const grid = document.getElementById("grid");
-
   const cart = new Map(); // id -> qty
 
   function money(n){ return Number(n||0).toLocaleString("uk-UA"); }
 
-  function cartCount(){
-    let c = 0;
-    for (const q of cart.values()) c += q;
-    return c;
-  }
+  function cartCount(){ let c=0; for (const q of cart.values()) c += q; return c; }
   function cartTotal(){
     let t = 0;
     for (const p of PRODUCTS){
@@ -460,16 +510,25 @@
     }
   }
 
+  function badgeIcon(p){
+    if (p.badge === "Хіт") return "⭐";
+    if (p.badge === "Вигідно") return "💰";
+    return "";
+  }
+
   function renderGrid(){
     grid.innerHTML = "";
     PRODUCTS.forEach((p) => {
       const first = safeSlides(p.slides)[0];
+      const icon = badgeIcon(p);
+
       const el = document.createElement("div");
       el.className = "item";
       el.innerHTML = `
         <div class="thumb">
           <img src="${first}" alt="${p.name}">
-          <div class="badge gold">${p.kg} кг</div>
+          <div class="badge gold">${p.kg} кг${icon ? " • " + icon : ""}</div>
+          <div class="made">MADE IN UKRAINE</div>
         </div>
         <div class="meta">
           <div class="title">${p.kg} кг</div>
@@ -477,6 +536,7 @@
           <button class="add" type="button">ADD</button>
         </div>
       `;
+
       el.querySelector(".add").addEventListener("click", (e) => {
         e.stopPropagation();
         addToCart(p.id, 1);
@@ -494,7 +554,7 @@
     syncBar();
   }
 
-  // Product modal state
+  /* ===== Product modal + slider ===== */
   const overlay = document.getElementById("overlay");
   const closeProduct = document.getElementById("closeProduct");
   const slideImg = document.getElementById("slideImg");
@@ -511,6 +571,12 @@
   const minus = document.getElementById("minus");
   const plus = document.getElementById("plus");
   const addBtn = document.getElementById("addBtn");
+
+  // Fullscreen
+  const fs = document.getElementById("fs");
+  const fsImg = document.getElementById("fsImg");
+  const fsTitle = document.getElementById("fsTitle");
+  const fsClose = document.getElementById("fsClose");
 
   let current = null;
   let slides = [];
@@ -535,6 +601,9 @@
     [...dotsWrap.querySelectorAll(".dot")].forEach((d, idx) => {
       d.classList.toggle("active", idx === slide);
     });
+
+    fsTitle.textContent = `Фото ${slide + 1}/${slides.length}`;
+    if (fs.style.display === "block") fadeSwap(fsImg, src);
   }
 
   function openProduct(id){
@@ -546,7 +615,9 @@
     qty = cart.get(current.id) || 0;
 
     mTitle.textContent = current.name;
-    mBadge.textContent = `${current.kg} кг`;
+    const icon = badgeIcon(current);
+    mBadge.textContent = `${current.kg} кг${icon ? " • " + icon : ""}`;
+
     pName.textContent = current.name;
     pDesc.textContent = current.desc;
     pPrice.textContent = money(current.price);
@@ -561,14 +632,10 @@
 
     slideImg.src = slides[0];
     qtyEl.textContent = qty;
-
     overlay.style.display = "flex";
   }
 
-  function closeProductModal(){
-    overlay.style.display = "none";
-  }
-
+  function closeProductModal(){ overlay.style.display = "none"; }
   closeProduct.onclick = closeProductModal;
   overlay.addEventListener("click", (e) => { if (e.target === overlay) closeProductModal(); });
 
@@ -609,7 +676,40 @@
     }
   });
 
-  // Checkout
+  // Fullscreen open
+  slideImg.addEventListener("click", () => {
+    fs.style.display = "block";
+    fsImg.src = slides[slide];
+    fsTitle.textContent = `Фото ${slide + 1}/${slides.length}`;
+  });
+  fsClose.onclick = () => { fs.style.display = "none"; };
+
+  // Fullscreen swipe
+  let fsStartX = 0, fsStartY = 0, fsMoving = false;
+  fs.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    fsStartX = t.clientX; fsStartY = t.clientY;
+    fsMoving = true;
+  }, {passive:true});
+  fs.addEventListener("touchmove", (e) => {
+    if (!fsMoving) return;
+    const t = e.touches[0];
+    const dx = t.clientX - fsStartX;
+    const dy = t.clientY - fsStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) e.preventDefault();
+  }, {passive:false});
+  fs.addEventListener("touchend", (e) => {
+    if (!fsMoving) return;
+    fsMoving = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - fsStartX;
+    if (Math.abs(dx) > 40) {
+      if (dx < 0) setSlide(slide + 1);
+      else setSlide(slide - 1);
+    }
+  });
+
+  /* ===== Checkout ===== */
   const openCheckoutBtn = document.getElementById("openCheckout");
   const coOverlay = document.getElementById("coOverlay");
   const closeCheckout = document.getElementById("closeCheckout");
@@ -674,7 +774,11 @@
 
     const items = PRODUCTS
       .map(p => ({
-        id: p.id, name: p.name, kg: p.kg, price: p.price, qty: (cart.get(p.id) || 0)
+        id: p.id,
+        name: p.name,
+        kg: p.kg,
+        price: p.price,
+        qty: (cart.get(p.id) || 0)
       }))
       .filter(x => x.qty > 0);
 
