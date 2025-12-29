@@ -8,120 +8,423 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b0b0c;
-      color: #fff;
+    :root{
+      --bg:#0b0b0c;
+      --card:#121214;
+      --stroke:rgba(255,255,255,.10);
+      --muted:rgba(255,255,255,.70);
+      --text:#fff;
+      --accent:#2a84ff;
+      --white:#fff;
+      --black:#000;
+      --r:16px;
+      --pad:14px;
     }
-    header {
-      padding: 16px;
-      border-bottom: 1px solid #222;
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);}
+    header{padding:16px;border-bottom:1px solid var(--stroke);position:sticky;top:0;background:rgba(11,11,12,.92);backdrop-filter:blur(10px);z-index:5;}
+    .title{font-size:18px;font-weight:800;margin:0;}
+    .subtitle{margin-top:6px;font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+    .chip{border:1px solid var(--stroke);border-radius:999px;padding:4px 10px}
+
+    .wrap{max-width:860px;margin:0 auto;padding:16px;}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+    @media (max-width:460px){.grid{grid-template-columns:1fr;}}
+
+    .card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--r);overflow:hidden}
+    .img{
+      position:relative;height:170px;background:#0f0f11;
+      background-image:url("./assets/core.jpg");
+      background-size:cover;background-position:center;
     }
-    h1 {
-      margin: 0;
-      font-size: 18px;
+    .badge{
+      position:absolute;left:12px;top:12px;
+      background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.18);
+      padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px;letter-spacing:.3px
     }
-    .wrap {
-      padding: 16px;
+    .body{padding:12px}
+    .name{margin:0 0 6px;font-weight:800;font-size:14px}
+    .desc{margin:0 0 10px;color:var(--muted);font-size:12px;line-height:1.35}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .price{font-weight:900}
+    .btn{border:0;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer}
+    .btn-add{background:var(--white);color:var(--black)}
+    .btn-add:active{transform:translateY(1px)}
+    .qty{font-size:12px;color:var(--muted);margin-top:8px}
+
+    /* Bottom bar */
+    .bar{
+      position:sticky;bottom:0;left:0;right:0;
+      background:rgba(18,18,20,.92);border-top:1px solid var(--stroke);
+      backdrop-filter:blur(10px);z-index:6;
+      padding:12px 16px;
     }
-    .card {
-      background: #141414;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 12px;
-      border: 1px solid #222;
+    .barin{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .sum{font-size:13px;color:var(--muted);line-height:1.35}
+    .sum b{color:#fff}
+    .btn-cart{background:var(--accent);color:#fff;padding:12px 14px}
+    .btn-cart:disabled{opacity:.55;cursor:not-allowed}
+
+    /* Modal */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center;z-index:20}
+    .modal{
+      width:100%;max-width:860px;background:var(--card);border:1px solid var(--stroke);
+      border-radius:18px 18px 0 0;overflow:hidden;
     }
-    .title {
-      font-weight: bold;
-      margin-bottom: 6px;
+    .mhead{padding:14px 16px;border-bottom:1px solid var(--stroke);display:flex;justify-content:space-between;align-items:center}
+    .mhead h2{margin:0;font-size:16px}
+    .close{background:transparent;border:0;color:#fff;font-size:22px;cursor:pointer;line-height:1}
+    .mcontent{padding:14px 16px;max-height:70vh;overflow:auto}
+    .line{border-bottom:1px solid rgba(255,255,255,.08);padding:10px 0;display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .lleft{min-width:0}
+    .lname{font-weight:800;font-size:13px;margin:0 0 3px}
+    .lmeta{font-size:12px;color:var(--muted)}
+    .lright{display:flex;align-items:center;gap:8px}
+    .iconbtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--stroke);background:transparent;color:#fff;font-weight:900;cursor:pointer}
+    .num{min-width:18px;text-align:center;font-weight:900}
+    .totalbox{margin-top:12px;border:1px solid var(--stroke);border-radius:14px;padding:12px;color:var(--muted)}
+    .totalbox b{color:#fff}
+
+    .form{
+      margin-top:12px;border:1px solid var(--stroke);border-radius:14px;padding:12px
     }
-    .price {
-      margin-bottom: 10px;
-      opacity: 0.9;
+    .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:520px){.frow{grid-template-columns:1fr;}}
+    label{font-size:12px;color:var(--muted);display:block;margin:8px 0 6px}
+    input, select, textarea{
+      width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);
+      background:#0f0f11;color:#fff;outline:none;
     }
-    button {
-      padding: 10px 14px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .add {
-      background: #fff;
-      color: #000;
-    }
-    .order {
-      background: #2a84ff;
-      color: #fff;
-      width: 100%;
-      margin-top: 20px;
-    }
+    textarea{min-height:70px;resize:vertical}
+
+    .actions{display:flex;gap:10px;margin-top:12px}
+    .btn-ghost{background:transparent;border:1px solid var(--stroke);color:#fff}
+    .btn-primary{background:var(--accent);color:#fff;flex:1}
+    .hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.4}
+    .warn{font-size:12px;color:#ffcc66;margin-top:8px;display:none}
   </style>
 </head>
 <body>
-
 <header>
-  <h1>BLACKWOOD 🖤 Каталог</h1>
+  <div class="title">BLACKWOOD 🖤 Вугілля</div>
+  <div class="subtitle">
+    <span class="chip">Нова Пошта</span>
+    <span class="chip">Накладений платіж</span>
+    <span class="chip">UA • ₴</span>
+  </div>
 </header>
 
 <div class="wrap">
+  <div id="grid" class="grid"></div>
+</div>
 
-  <div class="card">
-    <div class="title">BLACKWOOD CORE — 3 кг</div>
-    <div class="price">499 грн</div>
-    <button class="add" onclick="add('BLACKWOOD CORE — 3 кг')">ADD</button>
+<div class="bar">
+  <div class="barin">
+    <div class="sum">
+      <div><b>Кошик:</b> <span id="count">0</span> товар(ів)</div>
+      <div>Сума: <b><span id="total">0</span> ₴</b></div>
+    </div>
+    <button id="openCart" class="btn btn-cart" disabled>Перейти до кошика</button>
   </div>
+</div>
 
-  <div class="card">
-    <div class="title">BLACKWOOD CORE — 5 кг</div>
-    <div class="price">499 грн</div>
-    <button class="add" onclick="add('BLACKWOOD CORE — 5 кг')">ADD</button>
+<!-- Cart modal -->
+<div id="overlay" class="overlay">
+  <div class="modal">
+    <div class="mhead">
+      <h2>Кошик</h2>
+      <button class="close" id="closeCart">×</button>
+    </div>
+    <div class="mcontent">
+      <div id="cartLines"></div>
+
+      <div class="totalbox">
+        <div>Товарів: <b><span id="mCount">0</span></b></div>
+        <div>Вага (загалом): <b><span id="mKg">0</span> кг</b></div>
+        <div>Сума: <b><span id="mTotal">0</span> ₴</b></div>
+      </div>
+
+      <div class="form">
+        <h3 style="margin:0 0 8px;font-size:14px;">Оформлення (Нова Пошта)</h3>
+
+        <div class="frow">
+          <div>
+            <label>ПІБ</label>
+            <input id="fullName" placeholder="Напр. Тимур Іванов" />
+          </div>
+          <div>
+            <label>Телефон</label>
+            <input id="phone" placeholder="+380XXXXXXXXX" />
+          </div>
+        </div>
+
+        <div class="frow">
+          <div>
+            <label>Місто</label>
+            <input id="city" placeholder="Напр. Київ" />
+          </div>
+          <div>
+            <label>Тип доставки</label>
+            <select id="npType">
+              <option value="Відділення">Відділення</option>
+              <option value="Поштомат">Поштомат</option>
+              <option value="Курʼєр">Курʼєр (адреса)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label id="npPointLabel">Номер відділення / поштомату</label>
+          <input id="npPoint" placeholder="Напр. 12" />
+        </div>
+
+        <div>
+          <label>Коментар (необовʼязково)</label>
+          <textarea id="comment" placeholder="Напр. зателефонувати перед відправкою"></textarea>
+        </div>
+
+        <div class="hint">
+          Оплата: <b>накладений платіж</b>. Після оформлення я надішлю замовлення в бот, а адміну — у приват.
+        </div>
+
+        <div id="warn" class="warn">Заповни обовʼязкові поля: ПІБ, телефон, місто, відділення/адреса.</div>
+
+        <div class="actions">
+          <button id="clearCart" class="btn btn-ghost">Очистити</button>
+          <button id="sendOrder" class="btn btn-primary">Підтвердити замовлення</button>
+        </div>
+      </div>
+
+    </div>
   </div>
-
-  <div class="card">
-    <div class="title">BLACKWOOD CORE — 8 кг</div>
-    <div class="price">499 грн</div>
-    <button class="add" onclick="add('BLACKWOOD CORE — 8 кг')">ADD</button>
-  </div>
-
-  <button class="order" onclick="sendOrder()">Оформити замовлення</button>
 </div>
 
 <script>
-  const tg = window.Telegram.WebApp;
-  let items = [];
+  const tg = window.Telegram?.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
 
-  tg.ready();
-  tg.expand();
+  const PRODUCTS = [
+    {
+      id: "core_3",
+      name: "BLACKWOOD CORE — 3 кг",
+      weight_kg: 3,
+      price: 499,
+      desc: "Брикети з твердих порід. Довге горіння, низька зольність."
+    },
+    {
+      id: "core_5",
+      name: "BLACKWOOD CORE — 5 кг",
+      weight_kg: 5,
+      price: 499,
+      desc: "Оптимальний формат для BBQ, гриля та копчення."
+    },
+    {
+      id: "core_8",
+      name: "BLACKWOOD CORE — 8 кг",
+      weight_kg: 8,
+      price: 499,
+      desc: "Максимальний обʼєм для великої компанії або закладу."
+    },
+  ];
 
-  function add(name) {
-    items.push(name);
-    alert(name + " додано в кошик");
+  const cart = new Map(); // id -> qty
+
+  function money(n){ return Number(n || 0).toLocaleString("uk-UA"); }
+
+  function itemsFromCart(){
+    const items = [];
+    for (const p of PRODUCTS) {
+      const qty = cart.get(p.id) || 0;
+      if (qty > 0) {
+        items.push({ id:p.id, name:p.name, qty, price:p.price, weight_kg:p.weight_kg });
+      }
+    }
+    return items;
   }
 
-  function sendOrder() {
+  function totals(){
+    const items = itemsFromCart();
+    const count = items.reduce((s,i)=>s+i.qty,0);
+    const total = items.reduce((s,i)=>s+i.qty*i.price,0);
+    const kg = items.reduce((s,i)=>s+i.qty*i.weight_kg,0);
+    return {items,count,total,kg};
+  }
+
+  function renderCatalog(){
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
+
+    for (const p of PRODUCTS) {
+      const qty = cart.get(p.id) || 0;
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `
+        <div class="img" style="background-image:url('./assets/core.jpg')">
+          <div class="badge">${p.weight_kg} кг</div>
+        </div>
+        <div class="body">
+          <p class="name">${p.name}</p>
+          <p class="desc">${p.desc}</p>
+          <div class="row">
+            <div class="price">${money(p.price)} ₴</div>
+            <button class="btn btn-add">${qty>0 ? "Додати ще" : "Додати"}</button>
+          </div>
+          ${qty>0 ? `<div class="qty">У кошику: <b>${qty}</b> шт</div>` : `<div class="qty">&nbsp;</div>`}
+        </div>
+      `;
+      el.querySelector(".btn-add").onclick = () => {
+        cart.set(p.id, qty + 1);
+        syncUI();
+      };
+      grid.appendChild(el);
+    }
+  }
+
+  function renderCart(){
+    const box = document.getElementById("cartLines");
+    const {items,count,total,kg} = totals();
+    box.innerHTML = "";
+
     if (items.length === 0) {
-      alert("Кошик порожній");
-      return;
+      box.innerHTML = `<div style="color:rgba(255,255,255,.7);padding:8px 0;">Кошик порожній.</div>`;
+    } else {
+      for (const it of items) {
+        const line = document.createElement("div");
+        line.className = "line";
+        line.innerHTML = `
+          <div class="lleft">
+            <div class="lname">${it.name}</div>
+            <div class="lmeta">${it.weight_kg} кг • ${money(it.price)} ₴/шт</div>
+          </div>
+          <div class="lright">
+            <button class="iconbtn" data-act="minus">−</button>
+            <div class="num">${it.qty}</div>
+            <button class="iconbtn" data-act="plus">+</button>
+          </div>
+        `;
+        line.querySelector('[data-act="minus"]').onclick = () => {
+          const q = (cart.get(it.id) || 0) - 1;
+          if (q <= 0) cart.delete(it.id); else cart.set(it.id, q);
+          syncUI();
+          renderCart();
+        };
+        line.querySelector('[data-act="plus"]').onclick = () => {
+          cart.set(it.id, (cart.get(it.id) || 0) + 1);
+          syncUI();
+          renderCart();
+        };
+        box.appendChild(line);
+      }
     }
 
-    const payload = {
-      items: items,
-      total: items.length * 499,
-      delivery: {
-        full_name: "ТЕСТ",
-        phone: "+380000000",
-        city: "Київ",
-        np_type: "Відділення",
-        np_point: "12"
+    document.getElementById("mCount").textContent = count;
+    document.getElementById("mTotal").textContent = money(total);
+    document.getElementById("mKg").textContent = kg;
+  }
+
+  function syncUI(){
+    const {count,total} = totals();
+    document.getElementById("count").textContent = count;
+    document.getElementById("total").textContent = money(total);
+    const btn = document.getElementById("openCart");
+    btn.disabled = count === 0;
+
+    renderCatalog();
+
+    // Telegram MainButton (красиво)
+    if (tg && tg.MainButton) {
+      if (count > 0) {
+        tg.MainButton.setText(`Кошик • ${money(total)} ₴`).show();
+        tg.MainButton.onClick(() => openCart());
+      } else {
+        tg.MainButton.hide();
       }
+    }
+  }
+
+  function openCart(){
+    document.getElementById("overlay").style.display = "flex";
+    renderCart();
+  }
+
+  function closeCart(){
+    document.getElementById("overlay").style.display = "none";
+  }
+
+  document.getElementById("openCart").onclick = openCart;
+  document.getElementById("closeCart").onclick = closeCart;
+  document.getElementById("overlay").onclick = (e) => { if (e.target.id === "overlay") closeCart(); };
+
+  // NP type label/placeholder
+  const npType = document.getElementById("npType");
+  const npPointLabel = document.getElementById("npPointLabel");
+  const npPoint = document.getElementById("npPoint");
+  function updateNpHint(){
+    const v = npType.value;
+    if (v === "Курʼєр") {
+      npPointLabel.textContent = "Адреса доставки (вулиця, будинок, кв.)";
+      npPoint.placeholder = "Напр. вул. Хрещатик 10, кв 5";
+    } else {
+      npPointLabel.textContent = "Номер відділення / поштомату";
+      npPoint.placeholder = "Напр. 12";
+    }
+  }
+  npType.onchange = updateNpHint;
+  updateNpHint();
+
+  // Clear cart
+  document.getElementById("clearCart").onclick = () => {
+    cart.clear();
+    document.getElementById("warn").style.display = "none";
+    closeCart();
+    syncUI();
+  };
+
+  // Send order -> bot
+  function isValidPhone(s){
+    const t = (s||"").trim();
+    return /^\+?380\d{9}$/.test(t.replace(/\s+/g,""));
+  }
+
+  document.getElementById("sendOrder").onclick = () => {
+    const {items,count,total,kg} = totals();
+    if (count === 0) return;
+
+    const full_name = document.getElementById("fullName").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const np_type = npType.value;
+    const np_point = npPoint.value.trim();
+    const comment = document.getElementById("comment").value.trim();
+
+    const warn = document.getElementById("warn");
+    const ok = full_name && city && np_point && isValidPhone(phone);
+    if (!ok) {
+      warn.style.display = "block";
+      return;
+    }
+    warn.style.display = "none";
+
+    const payload = {
+      order_id: String(Date.now()),
+      currency: "UAH",
+      payment: "cod", // накладений платіж
+      items,
+      total,
+      total_kg: kg,
+      delivery: { full_name, phone, city, np_type, np_point, comment }
     };
 
+    if (!tg) {
+      alert("Відкрийте Mini App всередині Telegram через кнопку «Каталог».");
+      return;
+    }
     tg.sendData(JSON.stringify(payload));
     tg.close();
-  }
-</script>
+  };
 
+  // init
+  syncUI();
+</script>
 </body>
 </html>
