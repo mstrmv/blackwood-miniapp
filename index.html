@@ -1,422 +1,123 @@
-<!doctype html>
-<html lang="uk">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BLACKWOOD — Каталог</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLACKWOOD CORE</title>
 
-  <style>
-    :root{
-      --bg:#0b0b0c;
-      --card:#121214;
-      --stroke:rgba(255,255,255,.10);
-      --muted:rgba(255,255,255,.72);
-      --text:#fff;
-      --gold:#c8a45a;
-      --shadow: 0 10px 30px rgba(0,0,0,.45);
-      --r:18px;
+<style>
+/* ===== ОСНОВНОЙ ФОН ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(180,140,70,0.18),
+      rgba(0,0,0,0.92)
+    ),
+    url("https://raw.githubusercontent.com/USERNAME/REPO/main/assets/bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #fff;
+}
 
-      /* parallax control */
-      --bgY: 50%;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
-      color:var(--text);
-      background:
-        radial-gradient(1200px 500px at 50% -100px, rgba(200,164,90,.14), transparent 60%),
-        radial-gradient(800px 400px at 20% 0, rgba(255,159,45,.10), transparent 55%),
-        var(--bg);
-    }
+/* ===== КОНТЕЙНЕР ===== */
+.app {
+  min-height: 100vh;
+  padding: 16px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+}
 
-    .header{
-      padding:16px;
-      border-bottom:1px solid var(--stroke);
-      position:sticky; top:0;
-      background:rgba(11,11,12,.92);
-      backdrop-filter: blur(10px);
-      z-index:10;
-    }
-    .brand{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-    .logo{display:flex;flex-direction:column;line-height:1}
-    .logo .bw{font-weight:1000;letter-spacing:.6px;font-size:18px}
-    .logo .core{margin-top:3px;font-weight:1000;letter-spacing:1.2px;color:var(--gold);font-size:16px}
-    .tagline{font-size:12px;color:var(--muted);text-align:right;line-height:1.2}
-    .h-sub{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
-    .chip{border:1px solid var(--stroke);border-radius:999px;padding:5px 10px;color:var(--muted);font-size:12px}
-    .chip.gold{border-color:rgba(200,164,90,.35);color:rgba(200,164,90,.95)}
+/* ===== ЗАГОЛОВОК ===== */
+.header {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
 
-    /* ====== WRAP фон (вариант 2) + перелив + parallax ====== */
-    .wrap{
-      position: relative;
-      max-width:980px;
-      margin:16px auto;
-      padding:16px;
-      border-radius:24px;
-      overflow:hidden;
+.header span {
+  color: #caa35c;
+}
 
-      background:
-        linear-gradient(180deg, rgba(11,11,12,.62), rgba(11,11,12,.90)),
-        url("images/bg_blackwood.jpg") center var(--bgY) / cover no-repeat;
-      border:1px solid rgba(255,255,255,.06);
-      box-shadow: 0 16px 60px rgba(0,0,0,.50);
-    }
+/* ===== ТОВАРЫ ===== */
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+}
 
-    /* перелив */
-    .wrap::before{
-      content:"";
-      position:absolute;
-      inset:-30%;
-      background:
-        radial-gradient(40% 20% at 20% 30%, rgba(255,160,60,.18), transparent 60%),
-        radial-gradient(35% 25% at 80% 60%, rgba(255,120,30,.12), transparent 65%),
-        radial-gradient(25% 20% at 50% 90%, rgba(255,180,80,.10), transparent 70%);
-      animation: fireFlow 18s linear infinite;
-      pointer-events:none;
-      z-index:1;
-    }
-    @keyframes fireFlow{
-      0%   { transform: translateY(0) translateX(0) rotate(0deg); }
-      50%  { transform: translateY(-6%) translateX(-3%) rotate(1deg); }
-      100% { transform: translateY(0) translateX(0) rotate(0deg); }
-    }
+.product {
+  background: rgba(20,20,20,0.85);
+  border-radius: 18px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(202,163,92,0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
 
-    /* искры canvas поверх фона, но под контентом */
-    .sparks{
-      position:absolute;
-      inset:0;
-      z-index:2;
-      pointer-events:none;
-      opacity:.95;
-      mix-blend-mode: screen;
-    }
+.product:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 35px rgba(202,163,92,0.35);
+}
 
-    /* контент всегда сверху */
-    .wrap > *{
-      position: relative;
-      z-index:3;
-    }
+.product img {
+  width: 100%;
+  max-height: 130px;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
 
-    /* GRID */
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:12px;
-    }
-    @media (max-width:820px){ .grid{grid-template-columns: repeat(2, 1fr);} }
-    @media (max-width:420px){ .grid{grid-template-columns: repeat(2, 1fr);} }
+.product h3 {
+  margin: 6px 0;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
 
-    .item{
-      background: rgba(18,18,20,.92);
-      border:1px solid var(--stroke);
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow: var(--shadow);
-      cursor:pointer;
-      transition: transform .08s ease, border-color .2s ease, box-shadow .2s ease;
-      position:relative;
-    }
-    .item:active{ transform: translateY(1px); }
-
-    .thumb{
-      height:140px;
-      background:#0f0f11;
-      position:relative;
-      overflow:hidden;
-    }
-    .thumb img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      transform: scale(1.02);
-    }
-
-    .badge{
-      position:absolute; left:10px; top:10px;
-      background:rgba(0,0,0,.55);
-      border:1px solid rgba(255,255,255,.18);
-      padding:6px 10px;
-      border-radius:999px;
-      font-weight:1000;
-      font-size:12px;
-    }
-    .badge.gold{border-color:rgba(200,164,90,.35);color:rgba(200,164,90,.98)}
-
-    .made{
-      position:absolute;
-      right:10px;
-      bottom:10px;
-      font-size:11px;
-      font-weight:800;
-      letter-spacing:.5px;
-      color: rgba(255,255,255,.92);
-      background: rgba(0,0,0,.45);
-      border: 1px solid rgba(255,255,255,.18);
-      padding: 4px 8px;
-      border-radius: 999px;
-      backdrop-filter: blur(6px);
-    }
-
-    .meta{padding:10px}
-    .title{font-weight:1000;font-size:13px;line-height:1.2}
-    .price{margin-top:6px;color:rgba(255,255,255,.9);font-weight:1000}
-    .add{
-      margin-top:10px;
-      width:100%;
-      border:0;
-      border-radius:12px;
-      padding:10px 12px;
-      font-weight:1000;
-      background: linear-gradient(180deg, rgba(200,164,90,1), rgba(177,138,69,1));
-      color:#0b0b0c;
-      cursor:pointer;
-    }
-    .add:active{ transform: translateY(1px); }
-
-    /* ====== (2) Подсветка ХИТ карточки (5 кг) ====== */
-    .item.hit{
-      border-color: rgba(200,164,90,.45);
-      box-shadow:
-        0 10px 30px rgba(0,0,0,.45),
-        0 0 0 1px rgba(200,164,90,.18) inset,
-        0 0 28px rgba(255,160,60,.18);
-    }
-    .item.hit::after{
-      content:"";
-      position:absolute;
-      inset:-40%;
-      background:
-        radial-gradient(30% 20% at 20% 30%, rgba(255,160,60,.10), transparent 60%),
-        radial-gradient(30% 20% at 80% 70%, rgba(200,164,90,.12), transparent 60%);
-      animation: hitGlow 10s ease-in-out infinite;
-      pointer-events:none;
-    }
-    @keyframes hitGlow{
-      0%,100%{ transform: translate(0,0) rotate(0deg); opacity:.7; }
-      50%{ transform: translate(-2%, -1%) rotate(1deg); opacity:1; }
-    }
-
-    /* Bottom bar */
-    .bar{
-      position:sticky; bottom:0;
-      background: rgba(18,18,20,.92);
-      border-top:1px solid var(--stroke);
-      backdrop-filter: blur(10px);
-      padding:12px 16px;
-      z-index:10;
-    }
-    .barin{max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .sum{font-size:13px;color:var(--muted);line-height:1.35}
-    .sum b{color:#fff}
-    .btn{
-      border:0;border-radius:14px;padding:12px 14px;font-weight:1000;cursor:pointer;
-    }
-    .btn.primary{
-      background: linear-gradient(180deg, rgba(200,164,90,1), rgba(177,138,69,1));
-      color:#0b0b0c;
-    }
-    .btn.primary:disabled{opacity:.55;cursor:not-allowed}
-
-    /* Product modal */
-    .overlay{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.62);
-      display:none;
-      align-items:flex-end;
-      justify-content:center;
-      z-index:30;
-    }
-    .modal{
-      width:100%;
-      max-width:980px;
-      background: var(--card);
-      border:1px solid var(--stroke);
-      border-radius:18px 18px 0 0;
-      overflow:hidden;
-      box-shadow: var(--shadow);
-    }
-    .mhead{padding:14px 16px;border-bottom:1px solid var(--stroke);display:flex;justify-content:space-between;align-items:center}
-    .mtitle{font-weight:1000}
-    .x{background:transparent;border:0;color:#fff;font-size:22px;cursor:pointer}
-
-    .slider{
-      position:relative;
-      height:320px;
-      background:#0f0f11;
-      user-select:none;
-      -webkit-user-select:none;
-      touch-action: pan-y;
-    }
-    @media (max-width:420px){ .slider{height:290px;} }
-    .slide{
-      width:100%;height:100%;object-fit:cover;display:block;
-      transform: scale(1.02);
-      transition: opacity .22s ease, transform .35s ease;
-      opacity:1;
-      cursor:pointer;
-    }
-    .slide.is-fading{ opacity:0; transform: scale(1.01); }
-    .nav{
-      position:absolute;top:50%;transform:translateY(-50%);
-      width:44px;height:44px;border-radius:14px;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.35);
-      color:#fff;font-size:24px;font-weight:1000;cursor:pointer;
-    }
-    .nav.left{left:12px}
-    .nav.right{right:12px}
-    .dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:8px}
-    .dot{width:10px;height:10px;border-radius:99px;border:1px solid rgba(255,255,255,.40);background: rgba(255,255,255,.12);cursor:pointer}
-    .dot.active{background: var(--gold);border-color: rgba(200,164,90,.7)}
-    .pbody{padding:14px}
-    .pname{font-weight:1000;font-size:16px}
-    .pdesc{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.4}
-    .prow{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .qtybox{display:flex;align-items:center;gap:10px}
-    .qbtn{
-      width:40px;height:40px;border-radius:14px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.02);
-      color:#fff;font-size:20px;font-weight:1000;cursor:pointer;
-    }
-    .qnum{min-width:22px;text-align:center;font-weight:1000}
-    .addBig{
-      margin-top:12px;width:100%;
-      border:0;border-radius:14px;padding:12px 14px;font-weight:1000;cursor:pointer;
-      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
-      color:#000;
-    }
-
-    /* Fullscreen gallery */
-    .fs{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.92);
-      display:none;
-      z-index:50;
-    }
-    .fs .top{
-      position:absolute; left:0; right:0; top:0;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 16px;
-      background: linear-gradient(180deg, rgba(0,0,0,.55), transparent);
-      z-index:2;
-    }
-    .fs .top .t{font-weight:900; color: rgba(255,255,255,.9); font-size:12px}
-    .fs .close{
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.35);
-      color:#fff;
-      width:40px;height:40px;
-      border-radius:14px;
-      font-size:22px;
-      cursor:pointer;
-    }
-    .fs img{width:100%;height:100%;object-fit:contain;display:block;transition:opacity .18s ease}
-    .fs img.is-fading{opacity:0}
-
-    /* Checkout modal */
-    .co-overlay{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.62);
-      display:none;
-      align-items:flex-end;
-      justify-content:center;
-      z-index:40;
-    }
-    .co{
-      width:100%;
-      max-width:980px;
-      background: var(--card);
-      border:1px solid var(--stroke);
-      border-radius:18px 18px 0 0;
-      overflow:hidden;
-      box-shadow: var(--shadow);
-    }
-    .coh{padding:14px 16px;border-bottom:1px solid var(--stroke);display:flex;justify-content:space-between;align-items:center}
-    .cot{font-weight:1000}
-    .coc{padding:14px 16px;max-height:70vh;overflow:auto}
-    .line{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:10px}
-    .l1{font-weight:1000}
-    .l2{font-size:12px;color:var(--muted)}
-    .totalbox{margin-top:12px;border:1px solid var(--stroke);border-radius:14px;padding:12px;color:var(--muted);line-height:1.5}
-    .totalbox b{color:#fff}
-    .form{margin-top:12px;border:1px solid var(--stroke);border-radius:14px;padding:12px}
-    label{display:block;font-size:12px;color:var(--muted);margin:8px 0 6px}
-    input,select,textarea{
-      width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);
-      background:#0f0f11;color:#fff;outline:none
-    }
-    textarea{min-height:70px;resize:vertical}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media (max-width:520px){.grid2{grid-template-columns:1fr}}
-    .actions{display:flex;gap:10px;margin-top:12px}
-    .ghost{background:transparent;border:1px solid var(--stroke);color:#fff}
-    .warn{display:none;margin-top:10px;color:#ffcc66;font-size:12px}
-    .hint{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
-  </style>
+.product button {
+  background: linear-gradient(135deg, #caa35c, #8c6a32);
+  border: none;
+  border-radius: 12px;
+  padding: 8px;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+</style>
 </head>
 
 <body>
-<header class="header">
-  <div class="brand">
-    <div class="logo">
-      <div class="bw">BLACKWOOD</div>
-      <div class="core">CORE</div>
-    </div>
-    <div class="tagline">Hardwood Charcoal<br/>Briquettes</div>
+<div class="app">
+
+  <div class="header">
+    BLACKWOOD <span>CORE</span>
   </div>
-  <div class="h-sub">
-    <span class="chip gold">Каталог</span>
-    <span class="chip">Нова Пошта</span>
-    <span class="chip">Накладений платіж</span>
+
+  <div class="products">
+
+    <div class="product">
+      <img src="https://raw.githubusercontent.com/USERNAME/REPO/main/assets/core-3kg.png">
+      <h3>CORE 3 KG</h3>
+      <button>Добавить</button>
+    </div>
+
+    <div class="product">
+      <img src="https://raw.githubusercontent.com/USERNAME/REPO/main/assets/core-5kg.png">
+      <h3>CORE 5 KG</h3>
+      <button>Добавить</button>
+    </div>
+
+    <div class="product">
+      <img src="https://raw.githubusercontent.com/USERNAME/REPO/main/assets/core-8kg.png">
+      <h3>CORE 8 KG</h3>
+      <button>Добавить</button>
+    </div>
+
   </div>
-</header>
 
-<main class="wrap" id="wrap">
-  <canvas class="sparks" id="sparks"></canvas>
-  <div class="grid" id="grid"></div>
-</main>
-
-<footer class="bar">
-  <div class="barin">
-    <div class="sum">
-      <div><b>Кошик:</b> <span id="cartCount">0</span> шт</div>
-      <div>Сума: <b><span id="cartTotal">0</span> ₴</b></div>
-    </div>
-    <button class="btn primary" id="openCheckout" disabled>Оформити</button>
-  </div>
-</footer>
-
-<!-- Product modal -->
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <div class="mhead">
-      <div class="mtitle" id="mTitle">Товар</div>
-      <button class="x" id="closeProduct">×</button>
-    </div>
-
-    <div class="slider" id="slider">
-      <img id="slideImg" class="slide" src="" alt="Фото">
-      <div class="badge gold" id="mBadge">—</div>
-
-      <button class="nav left" id="prevBtn">‹</button>
-      <button class="nav right" id="nextBtn">›</button>
-
-      <div class="dots" id="dots"></div>
-      <div class="made">MADE IN UKRAINE</div>
-    </div>
-
-    <div class="pbody">
-      <div class="pname" id="pName">—</div>
-      <div class="pdesc" id="pDesc">—</div>
-
-      <div class="prow">
-        <div class="price"><span id="pPrice">0</span> ₴</div>
-
-        <div class="qtybox">
-          <button class="qbtn" id="minus">−</button>
-          <div class="qnum" id="qty">0</div>
-          <button class="qbtn" id="plus">+</button>
+</div>
+</body>
+</html>
