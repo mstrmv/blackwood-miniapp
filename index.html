@@ -1,123 +1,946 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BLACKWOOD CORE</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>BLACKWOOD CORE</title>
 
-<style>
-/* ===== ОСНОВНОЙ ФОН ===== */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(180,140,70,0.18),
-      rgba(0,0,0,0.92)
-    ),
-    url("https://raw.githubusercontent.com/USERNAME/REPO/main/assets/bg.jpg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  color: #fff;
-}
+  <!-- Telegram WebApp (для Mini App) -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-/* ===== КОНТЕЙНЕР ===== */
-.app {
-  min-height: 100vh;
-  padding: 16px;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(6px);
-}
+  <style>
+    :root{
+      --gold1:#caa35c;
+      --gold2:#8c6a32;
+      --bg:#0b0b0c;
+      --card: rgba(18,18,18,.78);
+      --card2: rgba(0,0,0,.35);
+      --stroke: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.65);
+      --danger:#ff4d4d;
+      --ok:#35d07f;
+      --radius:20px;
+      --shadow: 0 12px 40px rgba(0,0,0,.45);
+      --shadowGold: 0 0 28px rgba(202,163,92,.22);
+      --safeTop: env(safe-area-inset-top, 0px);
+      --safeBottom: env(safe-area-inset-bottom, 0px);
+    }
 
-/* ===== ЗАГОЛОВОК ===== */
-.header {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 16px;
-}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color: var(--text);
+      background: #000;
+      overflow-x:hidden;
+    }
 
-.header span {
-  color: #caa35c;
-}
+    /* ====== АНИМИРОВАННЫЙ ФОН (картинка + перелив) ====== */
+    .bg{
+      position: fixed;
+      inset: 0;
+      z-index:-3;
+      background:
+        radial-gradient(1100px 700px at 15% 10%, rgba(202,163,92,.18), transparent 60%),
+        radial-gradient(900px 600px at 85% 25%, rgba(202,163,92,.12), transparent 60%),
+        radial-gradient(900px 700px at 50% 90%, rgba(255,255,255,.06), transparent 60%),
+        linear-gradient(135deg, rgba(0,0,0,.92), rgba(15,15,15,.88));
+    }
+    .bg::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image: url("https://raw.githubusercontent.com/USERNAME/REPO/main/assets/bg.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat:no-repeat;
+      opacity:.30;
+      filter: blur(0px) saturate(1.05) contrast(1.05);
+      transform: scale(1.05);
+    }
+    .bg::after{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        conic-gradient(from 180deg at 50% 50%,
+          rgba(202,163,92,.18),
+          rgba(255,255,255,.07),
+          rgba(202,163,92,.12),
+          rgba(0,0,0,0),
+          rgba(202,163,92,.16)
+        );
+      animation: shimmer 10s linear infinite;
+      opacity:.75;
+      mix-blend-mode: screen;
+      filter: blur(34px);
+    }
+    @keyframes shimmer{
+      0%   { transform: translate(-6%, -4%) rotate(0deg) }
+      50%  { transform: translate(6%, 4%) rotate(180deg) }
+      100% { transform: translate(-6%, -4%) rotate(360deg) }
+    }
 
-/* ===== ТОВАРЫ ===== */
-.products {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 14px;
-}
+    /* ====== ОБЁРТКА ПОД MINI APP ====== */
+    .app{
+      min-height: 100dvh;
+      padding: calc(12px + var(--safeTop)) 12px calc(98px + var(--safeBottom));
+    }
 
-.product {
-  background: rgba(20,20,20,0.85);
-  border-radius: 18px;
-  padding: 12px;
-  text-align: center;
-  box-shadow: 0 0 25px rgba(202,163,92,0.15);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
+    /* ====== TOP BAR ====== */
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .brand{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .brand .title{
+      font-weight:900;
+      letter-spacing:.6px;
+      font-size:20px;
+      line-height:1.1;
+    }
+    .brand .title span{
+      color: var(--gold1);
+      text-shadow: 0 0 18px rgba(202,163,92,.35);
+    }
+    .brand .subtitle{
+      font-size:12px;
+      color: var(--muted);
+      letter-spacing:.2px;
+    }
 
-.product:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 0 35px rgba(202,163,92,0.35);
-}
+    .mini-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .pill{
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.35);
+      padding:8px 10px;
+      border-radius: 999px;
+      font-size:12px;
+      color: var(--muted);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadowGold);
+      user-select:none;
+      white-space:nowrap;
+    }
 
-.product img {
-  width: 100%;
-  max-height: 130px;
-  object-fit: contain;
-  margin-bottom: 8px;
-}
+    /* ====== TAB BUTTONS ====== */
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin: 10px 0 14px;
+    }
+    .tabbtn{
+      flex:1;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.28);
+      color: var(--muted);
+      padding:10px 12px;
+      border-radius: 999px;
+      font-weight:700;
+      letter-spacing:.2px;
+      backdrop-filter: blur(10px);
+      cursor:pointer;
+    }
+    .tabbtn.active{
+      color:#000;
+      border-color: rgba(202,163,92,.55);
+      background: linear-gradient(135deg, var(--gold1), var(--gold2));
+      box-shadow: 0 0 24px rgba(202,163,92,.28);
+    }
 
-.product h3 {
-  margin: 6px 0;
-  font-size: 15px;
-  letter-spacing: 1px;
-}
+    /* ====== CARDS / PANELS ====== */
+    .panel{
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.36);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+    .panel-inner{ padding: 14px; }
 
-.product button {
-  background: linear-gradient(135deg, #caa35c, #8c6a32);
-  border: none;
-  border-radius: 12px;
-  padding: 8px;
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-}
-</style>
+    /* ====== PRODUCT GRID ====== */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:12px;
+    }
+    @media (min-width: 480px){
+      .grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    .product{
+      position:relative;
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(30,30,30,.55), rgba(0,0,0,.28));
+      border-radius: 18px;
+      padding:12px;
+      box-shadow: 0 0 20px rgba(0,0,0,.22);
+      overflow:hidden;
+    }
+    .product::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background: radial-gradient(240px 140px at 30% 15%, rgba(202,163,92,.18), transparent 60%);
+      pointer-events:none;
+    }
+
+    .badge{
+      position:absolute;
+      top:10px; left:10px;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.5px;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+      display:flex; align-items:center; gap:6px;
+    }
+    .badge.hit{
+      border-color: rgba(202,163,92,.55);
+      box-shadow: 0 0 18px rgba(202,163,92,.22);
+    }
+    .badge.best{
+      border-color: rgba(53,208,127,.55);
+      box-shadow: 0 0 18px rgba(53,208,127,.18);
+    }
+
+    .p-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .icon{
+      width:40px; height:40px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+      display:grid; place-items:center;
+      font-size:20px;
+      box-shadow: var(--shadowGold);
+      flex:0 0 auto;
+    }
+
+    .p-img{
+      width:100%;
+      height:108px;
+      border-radius: 14px;
+      border:1px dashed rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      display:grid; place-items:center;
+      overflow:hidden;
+      margin-bottom:10px;
+    }
+    .p-img img{
+      width:100%;
+      height:100%;
+      object-fit: contain;
+      transform: translateZ(0);
+    }
+
+    .p-name{
+      font-weight:900;
+      letter-spacing:.5px;
+      margin:0 0 2px;
+      font-size:13px;
+    }
+    .p-desc{
+      margin:0 0 10px;
+      font-size:12px;
+      color: var(--muted);
+      line-height:1.2;
+      min-height: 30px;
+    }
+
+    .p-row{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .price{
+      font-weight:900;
+      letter-spacing:.2px;
+      font-size:13px;
+      color: rgba(255,255,255,.92);
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      border-radius: 12px;
+      padding:10px 12px;
+      font-weight:900;
+      letter-spacing:.2px;
+      background: linear-gradient(135deg, var(--gold1), var(--gold2));
+      color:#000;
+      box-shadow: 0 0 22px rgba(202,163,92,.25);
+      flex: 0 0 auto;
+      min-width: 92px;
+    }
+    .btn.secondary{
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.88);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:none;
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    /* ====== FORMS ====== */
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      margin-bottom:10px;
+    }
+    .label{
+      font-size:12px;
+      color: var(--muted);
+    }
+    input, select, textarea{
+      width:100%;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      padding:12px;
+      outline:none;
+      backdrop-filter: blur(10px);
+    }
+    textarea{ min-height: 84px; resize: vertical; }
+
+    .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .hint{
+      font-size:12px;
+      color: var(--muted);
+      line-height:1.35;
+    }
+
+    /* ====== BOTTOM BAR (корзина) ====== */
+    .bottom{
+      position: fixed;
+      left:0; right:0; bottom:0;
+      padding: 10px 12px calc(10px + var(--safeBottom));
+      background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.65), rgba(0,0,0,.92));
+      backdrop-filter: blur(14px);
+      z-index:50;
+    }
+    .bottom-inner{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(12,12,12,.72);
+      border-radius: 18px;
+      padding: 10px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      box-shadow: var(--shadow);
+    }
+    .cartline{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .cartline b{ font-size:13px; }
+    .cartline span{ font-size:12px; color: var(--muted); }
+
+    /* ====== CART MODAL ====== */
+    .modal{
+      position: fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:flex-end;
+      z-index:100;
+    }
+    .modal.open{ display:flex; }
+    .sheet{
+      width:100%;
+      max-height: 88dvh;
+      border-radius: 22px 22px 0 0;
+      background: rgba(12,12,12,.92);
+      border:1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 -24px 80px rgba(0,0,0,.65);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    .sheet-head{
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .sheet-head b{ font-size:14px; letter-spacing:.2px; }
+    .sheet-body{
+      padding: 12px 14px;
+      overflow:auto;
+    }
+    .item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px 0;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .item:last-child{ border-bottom:none; }
+    .item-left{
+      display:flex; gap:10px; align-items:center;
+      min-width: 0;
+    }
+    .item-left .mini{
+      width:38px; height:38px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+      display:grid; place-items:center;
+      font-size:18px;
+      flex:0 0 auto;
+    }
+    .item-left .txt{
+      display:flex; flex-direction:column; gap:2px;
+      min-width:0;
+    }
+    .item-left .txt b{
+      font-size:13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .item-left .txt span{
+      font-size:12px;
+      color: var(--muted);
+    }
+    .qty{
+      display:flex; align-items:center; gap:8px;
+    }
+    .qty button{
+      width:34px; height:34px;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.9);
+      cursor:pointer;
+      font-weight:900;
+    }
+    .qty i{
+      font-style: normal;
+      min-width: 22px;
+      text-align:center;
+      font-weight:900;
+    }
+
+    .totalbox{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .totalbox b{ font-size:14px; }
+    .totalbox span{ color: var(--muted); font-size:12px; }
+
+    .sheet-actions{
+      padding: 12px 14px;
+      border-top:1px solid rgba(255,255,255,.08);
+      display:flex;
+      gap:10px;
+    }
+    .sheet-actions .btn{ flex:1; }
+
+    .toast{
+      position: fixed;
+      left: 12px; right: 12px;
+      top: calc(12px + var(--safeTop));
+      z-index: 200;
+      display:none;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.62);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      font-size:12px;
+      color: rgba(255,255,255,.92);
+    }
+    .toast.show{ display:block; }
+  </style>
 </head>
 
 <body>
-<div class="app">
+  <div class="bg"></div>
 
-  <div class="header">
-    BLACKWOOD <span>CORE</span>
+  <div class="toast" id="toast"></div>
+
+  <div class="app">
+    <div class="top">
+      <div class="brand">
+        <div class="title">BLACKWOOD <span>CORE</span></div>
+        <div class="subtitle">Hardwood Charcoal Briquettes</div>
+      </div>
+      <div class="mini-actions">
+        <div class="pill" id="userPill">WB Mini App</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tabbtn active" data-tab="catalog">Каталог</button>
+      <button class="tabbtn" data-tab="nova">Нова Пошта</button>
+      <button class="tabbtn" data-tab="cod">Наложенный платёж</button>
+    </div>
+
+    <!-- ====== CATALOG ====== -->
+    <div class="panel" id="tab-catalog">
+      <div class="panel-inner">
+        <div class="grid" id="products"></div>
+        <div style="height:10px"></div>
+        <div class="hint">
+          💡 Совет: добавь «Акции/Промокод», «Отслеживание заказа», «FAQ» и «Поддержка» — Mini App станет как полноценный магазин.
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== NOVA POSHTA ====== -->
+    <div class="panel" id="tab-nova" style="display:none">
+      <div class="panel-inner">
+        <div class="hint" style="margin-bottom:10px">
+          Заполни данные доставки. При оформлении заказа мы отправим всё боту (через WebApp <code>sendData</code>), и ты обработаешь это вручную/через CRM.
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <div class="label">Имя и фамилия</div>
+            <input id="npName" placeholder="Иван Иванов" autocomplete="name" />
+          </div>
+          <div class="field">
+            <div class="label">Телефон</div>
+            <input id="npPhone" placeholder="+380..." inputmode="tel" autocomplete="tel" />
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <div class="label">Город</div>
+            <input id="npCity" placeholder="Киев / Львов..." />
+          </div>
+          <div class="field">
+            <div class="label">Отделение / Почтомат</div>
+            <input id="npBranch" placeholder="№12 / Почтомат 3456" />
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">Комментарий</div>
+          <textarea id="npComment" placeholder="Например: позвонить перед отправкой"></textarea>
+        </div>
+
+        <div class="hint">✅ Можно улучшить: подключить API Новой Почты для выбора отделения (поиск по городу).</div>
+      </div>
+    </div>
+
+    <!-- ====== CASH ON DELIVERY ====== -->
+    <div class="panel" id="tab-cod" style="display:none">
+      <div class="panel-inner">
+        <div class="hint" style="margin-bottom:10px">
+          Наложенный платёж — удобно клиенту, но учти комиссию/условия. Здесь можно включать/выключать опцию и добавлять правила.
+        </div>
+
+        <div class="field">
+          <div class="label">Оплата</div>
+          <select id="payType">
+            <option value="cod">Наложенный платёж (при получении)</option>
+            <option value="prepay">Предоплата (карта/перевод)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <div class="label">Примечание по оплате</div>
+          <textarea id="payNote" placeholder="Например: предоплата 100 грн для подтверждения"></textarea>
+        </div>
+
+        <div class="hint">💡 Можно лучше: добавить «юридическое» — условия возврата, публичная оферта, политика.</div>
+      </div>
+    </div>
   </div>
 
-  <div class="products">
-
-    <div class="product">
-      <img src="https://raw.githubusercontent.com/USERNAME/REPO/main/assets/core-3kg.png">
-      <h3>CORE 3 KG</h3>
-      <button>Добавить</button>
+  <!-- ====== BOTTOM CART BAR ====== -->
+  <div class="bottom">
+    <div class="bottom-inner">
+      <div class="cartline">
+        <b id="cartCount">Кошик: 0 шт</b>
+        <span id="cartSum">Сума: 0 ₴</span>
+      </div>
+      <button class="btn" id="openCartBtn">Оформити</button>
     </div>
-
-    <div class="product">
-      <img src="https://raw.githubusercontent.com/USERNAME/REPO/main/assets/core-5kg.png">
-      <h3>CORE 5 KG</h3>
-      <button>Добавить</button>
-    </div>
-
-    <div class="product">
-      <img src="https://raw.githubusercontent.com/USERNAME/REPO/main/assets/core-8kg.png">
-      <h3>CORE 8 KG</h3>
-      <button>Добавить</button>
-    </div>
-
   </div>
 
-</div>
+  <!-- ====== CART MODAL ====== -->
+  <div class="modal" id="modal">
+    <div class="sheet" role="dialog" aria-modal="true">
+      <div class="sheet-head">
+        <b>Корзина</b>
+        <button class="btn secondary" id="closeModalBtn" style="min-width:auto">Закрыть</button>
+      </div>
+      <div class="sheet-body">
+        <div id="cartItems"></div>
+
+        <div class="totalbox">
+          <div>
+            <b id="totalText">Итого: 0 ₴</b><br>
+            <span id="totalSub">Проверь доставку во вкладке “Нова Пошта”</span>
+          </div>
+          <button class="btn secondary" id="clearBtn" style="min-width:auto">Очистить</button>
+        </div>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn secondary" id="copyBtn">Скопировать заказ</button>
+        <button class="btn" id="sendBtn">Отправить боту</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== CONFIG: товары ======
+    // Поставь реальные цены/описания при желании.
+    const PRODUCTS = [
+      {
+        id: "core-3",
+        name: "CORE 3 KG",
+        tag: null,
+        tagClass: "",
+        emoji: "🍔", // бургер
+        desc: "Компактный формат. Как бургер — быстро и удобно.",
+        price: 0, // <- поставь цену
+        img: "https://raw.githubusercontent.com/USERNAME/REPO/main/assets/core-3kg.png"
+      },
+      {
+        id: "core-5",
+        name: "CORE 5 KG",
+        tag: "ХИТ",
+        tagClass: "hit",
+        emoji: "🍟", // картошка
+        desc: "Самый популярный выбор. Как фри — любимый формат.",
+        price: 0, // <- поставь цену
+        img: "https://raw.githubusercontent.com/USERNAME/REPO/main/assets/core-5kg.png"
+      },
+      {
+        id: "core-8",
+        name: "CORE 8 KG",
+        tag: "ВЫГОДНО",
+        tagClass: "best",
+        emoji: "🧺", // мешок/корзина
+        desc: "Максимум объёма и экономия. Для тех, кто берёт надолго.",
+        price: 0, // <- поставь цену
+        img: "https://raw.githubusercontent.com/USERNAME/REPO/main/assets/core-8kg.png"
+      }
+    ];
+
+    // ====== Telegram WebApp optimize ======
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) {
+      try {
+        tg.ready();
+        tg.expand();
+        // Если хочешь тёмную тему:
+        // tg.setHeaderColor('secondary_bg_color');
+      } catch(e){}
+    }
+
+    const $ = (id)=>document.getElementById(id);
+
+    // ====== UI: tabs ======
+    const tabs = document.querySelectorAll(".tabbtn");
+    const mapTab = {
+      catalog: $("tab-catalog"),
+      nova: $("tab-nova"),
+      cod: $("tab-cod")
+    };
+
+    tabs.forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        tabs.forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.dataset.tab;
+        Object.entries(mapTab).forEach(([k,el])=>{
+          el.style.display = (k===tab) ? "block" : "none";
+        });
+      });
+    });
+
+    // ====== render products ======
+    function renderProducts(){
+      const wrap = $("products");
+      wrap.innerHTML = "";
+      for (const p of PRODUCTS){
+        const el = document.createElement("div");
+        el.className = "product";
+        el.innerHTML = `
+          ${p.tag ? `<div class="badge ${p.tagClass}">⭐ ${p.tag}</div>` : ``}
+          <div class="p-top">
+            <div class="icon" title="Тип">${p.emoji}</div>
+            <div class="price">${formatPrice(p.price)}</div>
+          </div>
+          <div class="p-img">
+            <img src="${p.img}" alt="${escapeHtml(p.name)}" onerror="this.style.display='none'; this.parentElement.textContent='Нет картинки (проверь raw-ссылку)';" />
+          </div>
+          <div class="p-name">${escapeHtml(p.name)}</div>
+          <div class="p-desc">${escapeHtml(p.desc)}</div>
+          <div class="p-row">
+            <button class="btn secondary" onclick="addToCart('${p.id}', 1)">+1</button>
+            <button class="btn" onclick="addToCart('${p.id}', 1)">В корзину</button>
+          </div>
+        `;
+        wrap.appendChild(el);
+      }
+    }
+
+    // ====== cart ======
+    // cart: {id: qty}
+    const cart = load("cart") || {};
+
+    function addToCart(id, qty){
+      cart[id] = (cart[id] || 0) + qty;
+      if (cart[id] <= 0) delete cart[id];
+      save("cart", cart);
+      updateCartUI();
+      toast("Добавлено в корзину ✅");
+    }
+    function setQty(id, qty){
+      if (qty <= 0) delete cart[id];
+      else cart[id] = qty;
+      save("cart", cart);
+      updateCartUI();
+    }
+
+    function cartStats(){
+      let count = 0;
+      let sum = 0;
+      for (const [id,qty] of Object.entries(cart)){
+        const p = PRODUCTS.find(x=>x.id===id);
+        if (!p) continue;
+        count += qty;
+        sum += (p.price || 0) * qty;
+      }
+      return {count, sum};
+    }
+
+    function updateCartUI(){
+      const {count, sum} = cartStats();
+      $("cartCount").textContent = `Кошик: ${count} шт`;
+      $("cartSum").textContent = `Сума: ${formatPrice(sum)}`;
+
+      // modal list
+      const items = $("cartItems");
+      items.innerHTML = "";
+      const entries = Object.entries(cart);
+
+      if (entries.length === 0){
+        items.innerHTML = `<div class="hint">Корзина пустая. Вернись в «Каталог» и добавь товар.</div>`;
+      } else {
+        for (const [id,qty] of entries){
+          const p = PRODUCTS.find(x=>x.id===id);
+          if (!p) continue;
+
+          const row = document.createElement("div");
+          row.className = "item";
+          row.innerHTML = `
+            <div class="item-left">
+              <div class="mini">${p.emoji}</div>
+              <div class="txt">
+                <b>${escapeHtml(p.name)}</b>
+                <span>${formatPrice(p.price)} × ${qty} = <b>${formatPrice((p.price||0)*qty)}</b></span>
+              </div>
+            </div>
+            <div class="qty">
+              <button onclick="setQty('${id}', ${(qty-1)})">−</button>
+              <i>${qty}</i>
+              <button onclick="setQty('${id}', ${(qty+1)})">+</button>
+            </div>
+          `;
+          items.appendChild(row);
+        }
+      }
+
+      $("totalText").textContent = `Итого: ${formatPrice(sum)}`;
+    }
+
+    // ====== checkout payload ======
+    function buildOrder(){
+      const items = Object.entries(cart).map(([id,qty])=>{
+        const p = PRODUCTS.find(x=>x.id===id);
+        return p ? ({ id, name:p.name, qty, price:p.price||0, sum:(p.price||0)*qty }) : null;
+      }).filter(Boolean);
+
+      const delivery = {
+        name: $("npName").value.trim(),
+        phone: $("npPhone").value.trim(),
+        city: $("npCity").value.trim(),
+        branch: $("npBranch").value.trim(),
+        comment: $("npComment").value.trim()
+      };
+
+      const payment = {
+        type: $("payType").value,
+        note: $("payNote").value.trim()
+      };
+
+      const totals = cartStats();
+
+      return {
+        brand: "BLACKWOOD CORE",
+        ts: new Date().toISOString(),
+        items,
+        totals,
+        delivery,
+        payment
+      };
+    }
+
+    function validateOrder(order){
+      if (!order.items.length) return "Корзина пустая";
+      // Доставка — по желанию можно сделать обязательной:
+      // if (!order.delivery.phone) return "Заполни телефон (Нова Пошта)";
+      return null;
+    }
+
+    // ====== modal controls ======
+    const modal = $("modal");
+    $("openCartBtn").addEventListener("click", ()=>{
+      updateCartUI();
+      modal.classList.add("open");
+    });
+    $("closeModalBtn").addEventListener("click", ()=> modal.classList.remove("open"));
+    modal.addEventListener("click", (e)=>{
+      if (e.target === modal) modal.classList.remove("open");
+    });
+
+    $("clearBtn").addEventListener("click", ()=>{
+      for (const k of Object.keys(cart)) delete cart[k];
+      save("cart", cart);
+      updateCartUI();
+      toast("Корзина очищена 🧹");
+    });
+
+    $("copyBtn").addEventListener("click", async ()=>{
+      const order = buildOrder();
+      const err = validateOrder(order);
+      if (err) return toast(err, true);
+
+      const text = orderToText(order);
+      try{
+        await navigator.clipboard.writeText(text);
+        toast("Заказ скопирован 📋");
+      }catch(e){
+        toast("Не удалось скопировать (ограничения браузера)", true);
+      }
+    });
+
+    $("sendBtn").addEventListener("click", ()=>{
+      const order = buildOrder();
+      const err = validateOrder(order);
+      if (err) return toast(err, true);
+
+      const payload = JSON.stringify(order);
+
+      if (tg && tg.sendData){
+        try{
+          tg.sendData(payload);
+          toast("Отправлено боту ✅");
+          modal.classList.remove("open");
+        }catch(e){
+          toast("Не удалось отправить через WebApp", true);
+        }
+      } else {
+        // запасной вариант: покажем текст
+        toast("WebApp API не найден. Скопируй заказ.", true);
+      }
+    });
+
+    // ====== helpers ======
+    function formatPrice(n){
+      // если у тебя гривны:
+      const v = Number(n || 0);
+      return `${v.toLocaleString("uk-UA")} ₴`;
+    }
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, (m)=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+    function toast(msg, danger=false){
+      const el = $("toast");
+      el.textContent = msg;
+      el.style.borderColor = danger ? "rgba(255,77,77,.35)" : "rgba(255,255,255,.10)";
+      el.style.boxShadow = danger ? "0 12px 40px rgba(255,77,77,.12)" : "0 12px 40px rgba(0,0,0,.45)";
+      el.classList.add("show");
+      clearTimeout(window.__t);
+      window.__t = setTimeout(()=> el.classList.remove("show"), 2200);
+    }
+
+    function orderToText(order){
+      const lines = [];
+      lines.push("BLACKWOOD CORE — ЗАКАЗ");
+      lines.push("");
+      order.items.forEach(it=>{
+        lines.push(`• ${it.name} × ${it.qty} = ${formatPrice(it.sum)}`);
+      });
+      lines.push("");
+      lines.push(`ИТОГО: ${formatPrice(order.totals.sum)} (${order.totals.count} шт)`);
+      lines.push("");
+      lines.push("ДОСТАВКА (Нова Пошта):");
+      lines.push(`Имя: ${order.delivery.name || "-"}`);
+      lines.push(`Тел: ${order.delivery.phone || "-"}`);
+      lines.push(`Город: ${order.delivery.city || "-"}`);
+      lines.push(`Отделение: ${order.delivery.branch || "-"}`);
+      lines.push(`Коммент: ${order.delivery.comment || "-"}`);
+      lines.push("");
+      lines.push("ОПЛАТА:");
+      lines.push(`Тип: ${order.payment.type === "cod" ? "Наложенный платёж" : "Предоплата"}`);
+      lines.push(`Примечание: ${order.payment.note || "-"}`);
+      return lines.join("\n");
+    }
+
+    function save(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
+    function load(k){
+      try{ return JSON.parse(localStorage.getItem(k) || "null"); }catch(e){ return null; }
+    }
+
+    // ====== init ======
+    renderProducts();
+    updateCartUI();
+
+    // Плашка пользователя/платформы
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user){
+      const u = tg.initDataUnsafe.user;
+      $("userPill").textContent = `@${u.username || "user"} • Mini App`;
+    } else {
+      $("userPill").textContent = "Mini App • Web";
+    }
+  </script>
 </body>
 </html>
