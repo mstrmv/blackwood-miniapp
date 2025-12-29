@@ -407,14 +407,12 @@
         <div>Вага: <b><span id="mKg">0</span> кг</b></div>
       </div>
 
-      <!-- ✅ Состав заказа с +/- -->
       <div class="cartbox">
         <div class="l1" style="margin-bottom:6px;">Склад замовлення</div>
         <div id="checkoutItems"></div>
         <div class="hint" id="emptyCheckoutHint" style="display:none">Кошик порожній.</div>
       </div>
 
-      <!-- ✅ Промокод -->
       <div class="promo">
         <div class="l1">Промокод</div>
         <div class="promorow" style="margin-top:8px;">
@@ -425,7 +423,6 @@
         <div class="pill" id="promoPill" style="display:none;">✅ Промокод застосовано: <span id="promoName"></span> • знижка <span id="promoValue"></span></div>
       </div>
 
-      <!-- ✅ Доставка и итог -->
       <div class="fee">
         <div>Товари: <b><span id="mSubtotal">0</span> ₴</b></div>
         <div>Доставка: <b><span id="mShip">0</span> ₴</b> <span id="shipNote" style="color:var(--muted)"></span></div>
@@ -466,6 +463,7 @@
           <input id="npPoint" placeholder="Напр. 12" />
         </div>
 
+        <!-- DEMO auto-pick -->
         <div id="npAutoBox">
           <label>Підбір відділення (авто) — demo</label>
           <input id="npSearch" placeholder="Почни вводити: 12 або 'поштомат'..." />
@@ -509,27 +507,30 @@
 </div>
 
 <script>
+  // =========================
+  // Telegram WebApp init
+  // =========================
   const tg = window.Telegram?.WebApp;
   if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
+  // =========================
+  // Data
+  // =========================
   const PRODUCTS = [
     { id:"core_3", name:"BLACKWOOD CORE — 3 кг", kg:3, price:399, badge:"", desc:"Брикети з твердих порід. Для BBQ/гриля/копчення.", slides:["images/core-3kg.png"] },
     { id:"core_5", name:"BLACKWOOD CORE — 5 кг", kg:5, price:499, badge:"Хіт", desc:"Найпопулярніший формат. Довге горіння, мінімум золи.", slides:["images/core-5kg.png"] },
     { id:"core_8", name:"BLACKWOOD CORE — 8 кг", kg:8, price:599, badge:"Вигідно", desc:"Максимальний обʼєм для компанії або закладу.", slides:["images/core-8kg.png"] },
   ];
 
-  // ✅ промокоды (можешь добавлять свои)
   const PROMOS = {
-    "CORE10": { type:"percent", value:10, title:"CORE10" },   // -10%
-    "BW50":   { type:"fixed", value:50, title:"BW50" }        // -50 грн
+    "CORE10": { type:"percent", value:10, title:"CORE10" },
+    "BW50":   { type:"fixed", value:50, title:"BW50" }
   };
 
-  // ✅ стоимость доставки (просто правила, можно менять)
   function shippingFee(type){
     if (type === "Курʼєр") return 80;
     if (type === "Самовивіз") return 0;
-    // НП (відділення/поштомат)
-    return 0;
+    return 0; // НП
   }
   function shippingNote(type){
     if (type === "Курʼєр") return "(курʼєр +80₴)";
@@ -542,10 +543,14 @@
     return ok.length ? ok : ["images/core-5kg.png"];
   }
 
+  // =========================
+  // Helpers
+  // =========================
   const grid = document.getElementById("grid");
   const cart = new Map(); // id -> qty
 
   let appliedPromo = null; // {code, rule}
+
   function money(n){ return Number(n||0).toLocaleString("uk-UA"); }
   function pricePerKg(p){ return Math.round((p.price / p.kg) * 10) / 10; }
   function cartCount(){ let c=0; for (const q of cart.values()) c += q; return c; }
@@ -582,7 +587,9 @@
     return Math.max(0, sub + fee - disc);
   }
 
-  // ====== save/load state ======
+  // =========================
+  // Save / Load state
+  // =========================
   function saveState(){
     try{
       const cartObj = Object.fromEntries(cart.entries());
@@ -628,12 +635,18 @@
     }catch(e){}
   }
 
+  // =========================
+  // Bottom bar + TG MainButton
+  // =========================
   function syncBar(){
     document.getElementById("cartCount").textContent = cartCount();
     document.getElementById("cartTotal").textContent = money(cartSubtotal());
     document.getElementById("openCheckout").disabled = cartCount() === 0;
 
     if (tg && tg.MainButton) {
+      try {
+        tg.MainButton.offClick?.(); // some clients
+      }catch(e){}
       try {
         if (cartCount() > 0) {
           tg.MainButton.setText(`Оформити • ${money(totalToPay())} ₴`);
@@ -644,6 +657,9 @@
     }
   }
 
+  // =========================
+  // Grid render
+  // =========================
   function badgeIcon(p){
     if (p.badge === "Хіт") return "⭐";
     if (p.badge === "Вигідно") return "💰";
@@ -651,6 +667,7 @@
   }
 
   function renderGrid(){
+    if (!grid) return;
     grid.innerHTML = "";
     PRODUCTS.forEach((p) => {
       const first = safeSlides(p.slides)[0];
@@ -697,4 +714,502 @@
     }
   }
 
-  /* ===== Product modal + slider*
+  // =========================
+  // Product modal + slider
+  // =========================
+  const overlay = document.getElementById("overlay");
+  const closeProductBtn = document.getElementById("closeProduct");
+  const slideImg = document.getElementById("slideImg");
+  const dots = document.getElementById("dots");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+
+  const mTitle = document.getElementById("mTitle");
+  const mBadge = document.getElementById("mBadge");
+  const pName = document.getElementById("pName");
+  const pDesc = document.getElementById("pDesc");
+  const pPrice = document.getElementById("pPrice");
+  const qtyEl = document.getElementById("qty");
+  const plusBtn = document.getElementById("plus");
+  const minusBtn = document.getElementById("minus");
+  const addBtn = document.getElementById("addBtn");
+
+  let currentProduct = null;
+  let currentSlides = [];
+  let slideIndex = 0;
+  let modalQty = 0;
+  let isFading = false;
+
+  function openProduct(id){
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return;
+
+    currentProduct = p;
+    currentSlides = safeSlides(p.slides);
+    slideIndex = 0;
+
+    mTitle.textContent = "Товар";
+    pName.textContent = p.name;
+    pDesc.textContent = p.desc || "";
+    pPrice.textContent = money(p.price);
+    mBadge.textContent = `${p.kg} кг${p.badge ? " • " + p.badge : ""}`;
+
+    modalQty = cart.get(p.id) || 0;
+    qtyEl.textContent = modalQty;
+
+    renderDots();
+    setSlide(0, false);
+
+    overlay.style.display = "flex";
+  }
+
+  function closeProduct(){
+    overlay.style.display = "none";
+    currentProduct = null;
+  }
+
+  function renderDots(){
+    dots.innerHTML = "";
+    currentSlides.forEach((_, i) => {
+      const d = document.createElement("div");
+      d.className = "dot" + (i === slideIndex ? " active" : "");
+      d.addEventListener("click", () => setSlide(i, true));
+      dots.appendChild(d);
+    });
+  }
+
+  function setSlide(i, animate=true){
+    if (!currentSlides.length) return;
+    slideIndex = (i + currentSlides.length) % currentSlides.length;
+
+    const doSwap = () => {
+      slideImg.src = currentSlides[slideIndex];
+      Array.from(dots.children).forEach((x, idx) => x.classList.toggle("active", idx === slideIndex));
+      syncFsTitle();
+    };
+
+    if (!animate){
+      doSwap();
+      return;
+    }
+    if (isFading) return;
+    isFading = true;
+    slideImg.classList.add("is-fading");
+    setTimeout(() => {
+      doSwap();
+      slideImg.classList.remove("is-fading");
+      setTimeout(() => isFading = false, 120);
+    }, 160);
+  }
+
+  prevBtn.addEventListener("click", () => setSlide(slideIndex - 1, true));
+  nextBtn.addEventListener("click", () => setSlide(slideIndex + 1, true));
+
+  plusBtn.addEventListener("click", () => {
+    if (!currentProduct) return;
+    modalQty += 1;
+    qtyEl.textContent = modalQty;
+  });
+  minusBtn.addEventListener("click", () => {
+    if (!currentProduct) return;
+    modalQty = Math.max(0, modalQty - 1);
+    qtyEl.textContent = modalQty;
+  });
+  addBtn.addEventListener("click", () => {
+    if (!currentProduct) return;
+    // сделать количество в корзине = modalQty
+    const cur = cart.get(currentProduct.id) || 0;
+    addToCart(currentProduct.id, modalQty - cur);
+    closeProduct();
+  });
+
+  closeProductBtn.addEventListener("click", closeProduct);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeProduct();
+  });
+
+  // Swipe
+  const slider = document.getElementById("slider");
+  let touchX = 0;
+  slider.addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; }, {passive:true});
+  slider.addEventListener("touchend", (e) => {
+    const x2 = e.changedTouches[0].clientX;
+    const dx = x2 - touchX;
+    if (Math.abs(dx) < 40) return;
+    if (dx < 0) setSlide(slideIndex + 1, true);
+    else setSlide(slideIndex - 1, true);
+  }, {passive:true});
+
+  // =========================
+  // Fullscreen gallery
+  // =========================
+  const fs = document.getElementById("fs");
+  const fsImg = document.getElementById("fsImg");
+  const fsTitle = document.getElementById("fsTitle");
+  const fsClose = document.getElementById("fsClose");
+
+  function syncFsTitle(){
+    if (!currentSlides.length) return;
+    fsTitle.textContent = `Фото ${slideIndex+1}/${currentSlides.length}`;
+  }
+  function openFs(){
+    if (!currentSlides.length) return;
+    fsImg.src = currentSlides[slideIndex];
+    syncFsTitle();
+    fs.style.display = "block";
+  }
+  function closeFs(){ fs.style.display = "none"; }
+
+  slideImg.addEventListener("click", openFs);
+  fsClose.addEventListener("click", closeFs);
+  fs.addEventListener("click", (e) => { if (e.target === fs) closeFs(); });
+
+  // Swipe in fullscreen
+  let fsTouchX = 0;
+  fs.addEventListener("touchstart", (e) => { fsTouchX = e.touches[0].clientX; }, {passive:true});
+  fs.addEventListener("touchend", (e) => {
+    const x2 = e.changedTouches[0].clientX;
+    const dx = x2 - fsTouchX;
+    if (Math.abs(dx) < 40) return;
+    if (dx < 0) setSlide(slideIndex + 1, true);
+    else setSlide(slideIndex - 1, true);
+    fsImg.src = currentSlides[slideIndex];
+  }, {passive:true});
+
+  // =========================
+  // Checkout modal
+  // =========================
+  const coOverlay = document.getElementById("coOverlay");
+  const openCheckoutBtn = document.getElementById("openCheckout");
+  const closeCheckoutBtn = document.getElementById("closeCheckout");
+
+  function openCheckout(){
+    if (cartCount() === 0) return;
+    coOverlay.style.display = "flex";
+    renderCheckoutItems();
+    syncCheckoutHeader();
+    syncTotals();
+    saveState();
+  }
+  function closeCheckout(){
+    coOverlay.style.display = "none";
+    saveState();
+  }
+
+  openCheckoutBtn.addEventListener("click", openCheckout);
+  closeCheckoutBtn.addEventListener("click", closeCheckout);
+  coOverlay.addEventListener("click", (e) => { if (e.target === coOverlay) closeCheckout(); });
+
+  // =========================
+  // Checkout contents (+/-)
+  // =========================
+  function renderCheckoutItems(){
+    const box = document.getElementById("checkoutItems");
+    const emptyHint = document.getElementById("emptyCheckoutHint");
+    box.innerHTML = "";
+
+    if (cartCount() === 0){
+      emptyHint.style.display = "block";
+      return;
+    }
+    emptyHint.style.display = "none";
+
+    PRODUCTS.forEach(p => {
+      const q = cart.get(p.id) || 0;
+      if (!q) return;
+
+      const row = document.createElement("div");
+      row.className = "cartrow";
+      row.innerHTML = `
+        <div class="left">
+          <div class="name">${p.kg} кг • ${money(p.price)} ₴</div>
+          <div class="mini">${p.name}</div>
+        </div>
+        <div class="right">
+          <button class="qtybtn" type="button" data-id="${p.id}" data-d="-1">−</button>
+          <div class="qtynum">${q}</div>
+          <button class="qtybtn" type="button" data-id="${p.id}" data-d="1">+</button>
+        </div>
+      `;
+      row.querySelectorAll(".qtybtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-id");
+          const d = Number(btn.getAttribute("data-d"));
+          addToCart(id, d);
+        });
+      });
+      box.appendChild(row);
+    });
+  }
+
+  function syncCheckoutHeader(){
+    const lines = [];
+    PRODUCTS.forEach(p => {
+      const q = cart.get(p.id) || 0;
+      if (q) lines.push(`${p.kg}кг × ${q}`);
+    });
+    document.getElementById("orderLines").textContent = lines.join(" • ") || "—";
+    document.getElementById("mKg").textContent = cartKg();
+    document.getElementById("mTotalPay").textContent = money(totalToPay());
+  }
+
+  function syncTotals(){
+    const sub = cartSubtotal();
+    const type = document.getElementById("npType").value;
+    const ship = shippingFee(type);
+    const disc = calcDiscount(sub);
+    const pay = Math.max(0, sub + ship - disc);
+
+    document.getElementById("mSubtotal").textContent = money(sub);
+    document.getElementById("mShip").textContent = money(ship);
+    document.getElementById("shipNote").textContent = shippingNote(type);
+    document.getElementById("mDiscount").textContent = money(disc);
+    document.getElementById("mTotalPay2").textContent = money(pay);
+    document.getElementById("mTotalPay").textContent = money(pay);
+
+    syncBar();
+    saveState();
+  }
+
+  // =========================
+  // Promo
+  // =========================
+  const promoInput = document.getElementById("promoInput");
+  const promoPill = document.getElementById("promoPill");
+  const promoName = document.getElementById("promoName");
+  const promoValue = document.getElementById("promoValue");
+
+  function applyPromoCode(codeRaw, silent=false){
+    const code = String(codeRaw||"").trim().toUpperCase();
+    if (!code){
+      appliedPromo = null;
+      promoPill.style.display = "none";
+      promoInput.value = "";
+      syncTotals();
+      return;
+    }
+    const rule = PROMOS[code];
+    if (!rule){
+      if (!silent && tg) tg.showAlert("Промокод не знайдено.");
+      appliedPromo = null;
+      promoPill.style.display = "none";
+      syncTotals();
+      return;
+    }
+    appliedPromo = { code, rule };
+    promoName.textContent = rule.title;
+    promoValue.textContent = (rule.type === "percent") ? `${rule.value}%` : `${rule.value} ₴`;
+    promoPill.style.display = "inline-flex";
+    promoInput.value = code;
+    syncTotals();
+  }
+
+  document.getElementById("applyPromo").addEventListener("click", () => applyPromoCode(promoInput.value));
+  promoInput.addEventListener("keydown", (e) => { if (e.key === "Enter") applyPromoCode(promoInput.value); });
+
+  // =========================
+  // Nova Poshta DEMO logic
+  // =========================
+  const npTypeEl   = document.getElementById("npType");
+  const npLabelEl  = document.getElementById("npLabel");
+  const npPointEl  = document.getElementById("npPoint");
+  const npAutoBox  = document.getElementById("npAutoBox");
+  const npSearchEl = document.getElementById("npSearch");
+  const npPickEl   = document.getElementById("npPick");
+
+  const NP_DEMO = [
+    { type:"Відділення", city:"Київ",   title:"Відділення №12 • вул. Хрещатик, 10", ref:"12" },
+    { type:"Відділення", city:"Київ",   title:"Відділення №5 • просп. Перемоги, 22", ref:"5" },
+    { type:"Поштомат",   city:"Київ",   title:"Поштомат №30012 • ТРЦ Gulliver", ref:"30012" },
+    { type:"Відділення", city:"Львів",  title:"Відділення №1 • пл. Ринок, 1", ref:"1" },
+    { type:"Поштомат",   city:"Львів",  title:"Поштомат №30105 • вул. Городоцька, 2", ref:"30105" },
+    { type:"Відділення", city:"Одеса",  title:"Відділення №7 • вул. Дерибасівська, 7", ref:"7" },
+    { type:"Поштомат",   city:"Одеса",  title:"Поштомат №30200 • Аркадія", ref:"30200" },
+  ];
+
+  function norm(s){ return String(s||"").trim().toLowerCase(); }
+
+  function fillDemoList(queryText){
+    const q = norm(queryText);
+    const city = norm(document.getElementById("city")?.value || "");
+    const type = npTypeEl?.value || "Відділення";
+
+    let list = NP_DEMO.filter(x => x.type === type);
+
+    if (city) list = list.filter(x => norm(x.city).includes(city));
+    if (q) list = list.filter(x => norm(x.title).includes(q) || norm(x.ref).includes(q));
+
+    npPickEl.innerHTML =
+      `<option value="">— обери зі списку —</option>` +
+      list.map(x => `<option value="${x.ref}">${x.title}</option>`).join("");
+  }
+
+  function syncNpUI(){
+    const t = npTypeEl?.value || "Відділення";
+
+    if (t === "Самовивіз"){
+      npLabelEl.textContent = "Пункт самовивозу";
+      npPointEl.placeholder = "Напр. шоурум / адреса";
+      npAutoBox.style.display = "none";
+      return;
+    }
+    if (t === "Курʼєр"){
+      npLabelEl.textContent = "Адреса доставки *";
+      npPointEl.placeholder = "Вулиця, будинок, квартира";
+      npAutoBox.style.display = "none";
+      return;
+    }
+
+    npLabelEl.textContent = (t === "Поштомат")
+      ? "Номер поштомату *"
+      : "Номер відділення *";
+
+    npPointEl.placeholder = (t === "Поштомат") ? "Напр. 30012" : "Напр. 12";
+    npAutoBox.style.display = "";
+    fillDemoList(npSearchEl.value);
+  }
+
+  npTypeEl?.addEventListener("change", () => { syncNpUI(); syncTotals(); saveState(); });
+  npSearchEl?.addEventListener("input", () => fillDemoList(npSearchEl.value));
+  npPickEl?.addEventListener("change", () => { if (npPickEl.value) npPointEl.value = npPickEl.value; saveState(); });
+  document.getElementById("city")?.addEventListener("input", () => {
+    if (npAutoBox.style.display !== "none") fillDemoList(npSearchEl.value);
+    saveState();
+  });
+
+  // =========================
+  // Send order to bot
+  // =========================
+  function validPhoneUA(v){
+    const s = String(v||"").trim().replace(/\s+/g,"");
+    return /^\+?380\d{9}$/.test(s) || /^0\d{9}$/.test(s);
+  }
+  function showWarn(on){
+    const w = document.getElementById("warn");
+    w.style.display = on ? "block" : "none";
+  }
+
+  document.getElementById("clearCart").addEventListener("click", () => {
+    cart.clear();
+    appliedPromo = null;
+    promoPill.style.display = "none";
+    promoInput.value = "";
+    syncBar();
+    renderCheckoutItems();
+    syncCheckoutHeader();
+    syncTotals();
+    saveState();
+  });
+
+  document.getElementById("send").addEventListener("click", () => {
+    showWarn(false);
+
+    if (cartCount() === 0){
+      if (tg) tg.showAlert("Кошик порожній.");
+      return;
+    }
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const npType = document.getElementById("npType").value;
+    const npPoint = document.getElementById("npPoint").value.trim();
+    const comment = document.getElementById("comment").value.trim();
+
+    // обязательные
+    if (!fullName || !phone || !city){
+      showWarn(true);
+      return;
+    }
+    if (!validPhoneUA(phone)){
+      showWarn(true);
+      if (tg) tg.showAlert("Телефон має бути у форматі +380XXXXXXXXX або 0XXXXXXXXX");
+      return;
+    }
+
+    // в зависимости от типа доставки
+    if (npType === "Відділення" || npType === "Поштомат"){
+      if (!npPoint){
+        showWarn(true);
+        if (tg) tg.showAlert("Вкажи номер відділення/поштомату.");
+        return;
+      }
+    }
+    if (npType === "Курʼєр" && npPoint.length < 6){
+      showWarn(true);
+      if (tg) tg.showAlert("Вкажи адресу доставки (вулиця, будинок…).");
+      return;
+    }
+
+    const items = PRODUCTS
+      .filter(p => (cart.get(p.id) || 0) > 0)
+      .map(p => ({
+        id: p.id,
+        name: p.name,
+        kg: p.kg,
+        price: p.price,
+        qty: cart.get(p.id)
+      }));
+
+    const payload = {
+      type: "order",
+      ts: Date.now(),
+      customer: { fullName, phone, city },
+      delivery: { npType, npPoint },
+      promo: appliedPromo ? { code: appliedPromo.code, rule: appliedPromo.rule } : null,
+      comment,
+      items,
+      totals: {
+        subtotal: cartSubtotal(),
+        shipping: shippingFee(npType),
+        discount: calcDiscount(cartSubtotal()),
+        to_pay: totalToPay(),
+        kg: cartKg()
+      }
+    };
+
+    saveState();
+
+    if (tg && tg.sendData){
+      tg.sendData(JSON.stringify(payload));
+      tg.showAlert("✅ Замовлення відправлено в бот!");
+      closeCheckout();
+    } else {
+      alert("TG WebApp недоступний. Дані в консолі.");
+      console.log(payload);
+    }
+  });
+
+  // =========================
+  // Status button (stub)
+  // =========================
+  document.getElementById("checkStatusBtn")?.addEventListener("click", () => {
+    if (tg) tg.showAlert("Статус: функція в розробці ✅");
+    else alert("Статус: функція в розробці ✅");
+  });
+
+  // =========================
+  // ✅ FIX: Safe init (вот это и решает «пропало всё»)
+  // =========================
+  window.addEventListener("error", (e) => {
+    console.error("JS ERROR:", e?.message || e);
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    try{
+      renderGrid();
+      loadState();
+      syncNpUI();
+      syncBar();
+      renderCheckoutItems();
+      syncCheckoutHeader();
+      syncTotals();
+    }catch(e){
+      console.error("INIT ERROR:", e);
+      alert("Помилка в коді. Відкрий консоль (F12) і подивись INIT ERROR.");
+    }
+  });
+</script>
+
+</body>
+</html>
