@@ -3,17 +3,339 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BLACKWOOD — 5 кг</title>
+  <title>BLACKWOOD — CORE 5 кг</title>
 
-  <link rel="stylesheet" href="css/style.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    :root{
+      --bg:#0b0b0c;
+      --card:#121214;
+      --stroke:rgba(255,255,255,.10);
+      --muted:rgba(255,255,255,.72);
+      --text:#fff;
+
+      /* BLACKWOOD brand */
+      --gold:#c8a45a;     /* CORE */
+      --ember:#ff9f2d;    /* small accents */
+      --shadow: 0 10px 30px rgba(0,0,0,.45);
+
+      --r:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background: radial-gradient(1200px 500px at 50% -100px, rgba(200,164,90,.14), transparent 60%),
+                  radial-gradient(800px 400px at 20% 0, rgba(255,159,45,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+
+    /* Header */
+    .header{
+      padding:16px;
+      border-bottom:1px solid var(--stroke);
+      position:sticky; top:0;
+      background:rgba(11,11,12,.92);
+      backdrop-filter: blur(10px);
+      z-index:10;
+    }
+    .brand{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .logo{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+    }
+    .logo .bw{
+      font-weight:1000;
+      letter-spacing:.6px;
+      font-size:18px;
+    }
+    .logo .core{
+      margin-top:3px;
+      font-weight:1000;
+      letter-spacing:1.2px;
+      color:var(--gold);
+      font-size:16px;
+    }
+    .tagline{
+      font-size:12px;
+      color:var(--muted);
+      text-align:right;
+      line-height:1.2;
+    }
+    .h-sub{
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      border:1px solid var(--stroke);
+      border-radius:999px;
+      padding:5px 10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .chip.gold{
+      border-color: rgba(200,164,90,.35);
+      color: rgba(200,164,90,.95);
+    }
+
+    /* Layout */
+    .wrap{max-width:860px;margin:0 auto;padding:16px}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 70%), var(--card);
+      border:1px solid var(--stroke);
+      border-radius: var(--r);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+    }
+
+    /* Slider */
+    .slider{
+      position:relative;
+      height:320px;
+      background:#0f0f11;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action: pan-y; /* allow vertical scroll, handle horizontal swipe */
+    }
+    @media (max-width:420px){ .slider{height:290px;} }
+
+    .slide{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transform: scale(1.02);
+      transition: opacity .22s ease, transform .35s ease;
+      opacity:1;
+      cursor:pointer;
+    }
+    .slide.is-fading{ opacity:0; transform: scale(1.01); }
+
+    .badge{
+      position:absolute;
+      left:12px; top:12px;
+      background: rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.18);
+      padding:7px 11px;
+      border-radius:999px;
+      font-weight:1000;
+      font-size:12px;
+      letter-spacing:.4px;
+    }
+    .badge.gold{
+      border-color: rgba(200,164,90,.35);
+      color: rgba(200,164,90,.98);
+    }
+
+    .nav{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      width:44px;height:44px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.35);
+      color:#fff;
+      font-size:24px;
+      font-weight:1000;
+      cursor:pointer;
+      transition: transform .08s ease, background .2s ease;
+    }
+    .nav:active{ transform:translateY(-50%) scale(.98); }
+    .nav.left{left:12px}
+    .nav.right{right:12px}
+
+    .dots{
+      position:absolute;
+      left:0; right:0;
+      bottom:10px;
+      display:flex;
+      justify-content:center;
+      gap:8px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:99px;
+      border:1px solid rgba(255,255,255,.40);
+      background: rgba(255,255,255,.12);
+      cursor:pointer;
+    }
+    .dot.active{
+      background: var(--gold);
+      border-color: rgba(200,164,90,.7);
+    }
+
+    /* Body */
+    .body{padding:14px}
+    .name{font-weight:1000;font-size:16px}
+    .desc{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.4}
+    .row{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .price{font-weight:1100;font-size:18px;color:#fff}
+    .price .uah{color:rgba(255,255,255,.85);font-weight:900}
+
+    .btn{
+      border:0;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:1000;
+      cursor:pointer;
+      transition: transform .08s ease, filter .2s ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn.add{
+      margin-top:12px;
+      width:100%;
+      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
+      color:#000;
+    }
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(200,164,90,1), rgba(177,138,69,1));
+      color:#0b0b0c;
+    }
+    .btn.primary:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      filter: grayscale(.2);
+    }
+    .btn.ghost{
+      background: transparent;
+      border:1px solid var(--stroke);
+      color:#fff;
+    }
+
+    .qtybox{display:flex;align-items:center;gap:10px}
+    .qbtn{
+      width:40px;height:40px;
+      border-radius:14px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.02);
+      color:#fff;
+      font-size:20px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+    .qnum{min-width:22px;text-align:center;font-weight:1000}
+
+    /* Bottom bar */
+    .bar{
+      position:sticky; bottom:0;
+      background: rgba(18,18,20,.92);
+      border-top:1px solid var(--stroke);
+      backdrop-filter: blur(10px);
+      padding:12px 16px;
+      z-index:10;
+    }
+    .barin{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .sum{font-size:13px;color:var(--muted);line-height:1.35}
+    .sum b{color:#fff}
+
+    /* Checkout modal */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.62);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      z-index:30;
+    }
+    .modal{
+      width:100%;
+      max-width:860px;
+      background: var(--card);
+      border:1px solid var(--stroke);
+      border-radius:18px 18px 0 0;
+      overflow:hidden;
+      box-shadow: var(--shadow);
+    }
+    .mhead{padding:14px 16px;border-bottom:1px solid var(--stroke);display:flex;justify-content:space-between;align-items:center}
+    .mtitle{font-weight:1000}
+    .x{background:transparent;border:0;color:#fff;font-size:22px;cursor:pointer}
+    .mcontent{padding:14px 16px;max-height:70vh;overflow:auto}
+    .cartline{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:10px}
+    .lname{font-weight:1000}
+    .lmeta{font-size:12px;color:var(--muted)}
+    .mini{font-size:12px;color:var(--muted);margin-right:6px}
+    .totalbox{margin-top:12px;border:1px solid var(--stroke);border-radius:14px;padding:12px;color:var(--muted);line-height:1.5}
+    .totalbox b{color:#fff}
+    .form{margin-top:12px;border:1px solid var(--stroke);border-radius:14px;padding:12px}
+    label{display:block;font-size:12px;color:var(--muted);margin:8px 0 6px}
+    input,select,textarea{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:#0f0f11;
+      color:#fff;
+      outline:none;
+    }
+    textarea{min-height:70px;resize:vertical}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:520px){.grid2{grid-template-columns:1fr}}
+    .actions{display:flex;gap:10px;margin-top:12px}
+    .warn{display:none;margin-top:10px;color:#ffcc66;font-size:12px}
+    .hint{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
+
+    /* Fullscreen gallery */
+    .fs{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.92);
+      display:none;
+      z-index:50;
+    }
+    .fs .top{
+      position:absolute; left:0; right:0; top:0;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px;
+      background: linear-gradient(180deg, rgba(0,0,0,.55), transparent);
+      z-index:2;
+    }
+    .fs .top .t{
+      font-weight:900; color: rgba(255,255,255,.9); font-size:12px;
+    }
+    .fs .close{
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.35);
+      color:#fff;
+      width:40px;height:40px;
+      border-radius:14px;
+      font-size:22px;
+      cursor:pointer;
+    }
+    .fs img{
+      width:100%; height:100%;
+      object-fit:contain;
+      display:block;
+      transition: opacity .18s ease;
+    }
+    .fs img.is-fading{ opacity:0; }
+  </style>
 </head>
+
 <body>
 
 <header class="header">
-  <div class="h-title">BLACKWOOD 🖤</div>
+  <div class="brand">
+    <div class="logo">
+      <div class="bw">BLACKWOOD</div>
+      <div class="core">CORE</div>
+    </div>
+    <div class="tagline">Hardwood Charcoal<br/>Briquettes</div>
+  </div>
+
   <div class="h-sub">
-    <span class="chip">Вугілля • 5 кг</span>
+    <span class="chip gold">5 кг</span>
     <span class="chip">Нова Пошта</span>
     <span class="chip">Накладений платіж</span>
   </div>
@@ -24,29 +346,31 @@
   <section class="card">
     <div class="slider" id="slider">
       <img id="slideImg" class="slide" src="images/core_5_1.png" alt="BLACKWOOD CORE 5 кг">
-      <div class="badge">5 кг</div>
+      <div class="badge gold">5 кг</div>
 
-      <button class="nav left" id="prevBtn">‹</button>
-      <button class="nav right" id="nextBtn">›</button>
+      <button class="nav left" id="prevBtn" aria-label="Prev">‹</button>
+      <button class="nav right" id="nextBtn" aria-label="Next">›</button>
 
       <div class="dots">
-        <button class="dot active" data-i="0"></button>
-        <button class="dot" data-i="1"></button>
-        <button class="dot" data-i="2"></button>
+        <button class="dot active" data-i="0" aria-label="1"></button>
+        <button class="dot" data-i="1" aria-label="2"></button>
+        <button class="dot" data-i="2" aria-label="3"></button>
       </div>
     </div>
 
     <div class="body">
       <div class="name">BLACKWOOD CORE — 5 кг</div>
-      <div class="desc">Брикети з твердих порід. Довге горіння • Низька зольність • Для BBQ/гриля/копчення</div>
+      <div class="desc">
+        Брикети з твердих порід. Довге горіння • Низька зольність • Для BBQ/гриля/копчення
+      </div>
 
       <div class="row">
-        <div class="price"><span id="price">499</span> ₴</div>
+        <div class="price"><span id="price">499</span> <span class="uah">₴</span></div>
 
         <div class="qtybox">
-          <button class="qbtn" id="minus">−</button>
+          <button class="qbtn" id="minus" aria-label="Minus">−</button>
           <div class="qnum" id="qty">0</div>
-          <button class="qbtn" id="plus">+</button>
+          <button class="qbtn" id="plus" aria-label="Plus">+</button>
         </div>
       </div>
 
@@ -71,7 +395,7 @@
   <div class="modal">
     <div class="mhead">
       <div class="mtitle">Оформлення • Нова Пошта</div>
-      <button class="x" id="close">×</button>
+      <button class="x" id="close" aria-label="Close">×</button>
     </div>
 
     <div class="mcontent">
@@ -144,11 +468,20 @@
   </div>
 </div>
 
+<!-- Fullscreen gallery -->
+<div class="fs" id="fs">
+  <div class="top">
+    <div class="t" id="fsTitle">Фото 1/3</div>
+    <button class="close" id="fsClose" aria-label="Close fullscreen">×</button>
+  </div>
+  <img id="fsImg" src="" alt="Фото товару">
+</div>
+
 <script>
   const tg = window.Telegram?.WebApp;
   if (tg) { tg.ready(); tg.expand(); }
 
-  // ✅ поменяй расширение на .jpg если у тебя jpg
+  // Если у тебя jpg — замени .png -> .jpg
   const SLIDES = [
     "images/core_5_1.png",
     "images/core_5_2.png",
@@ -162,27 +495,115 @@
   let qty = 0;
 
   const slideImg = document.getElementById("slideImg");
+  const slider = document.getElementById("slider");
   const dots = [...document.querySelectorAll(".dot")];
 
-  function setSlide(i){
+  // Fullscreen
+  const fs = document.getElementById("fs");
+  const fsImg = document.getElementById("fsImg");
+  const fsTitle = document.getElementById("fsTitle");
+  const fsClose = document.getElementById("fsClose");
+
+  function money(n){ return Number(n||0).toLocaleString("uk-UA"); }
+
+  function fadeSwap(imgEl, nextSrc){
+    imgEl.classList.add("is-fading");
+    setTimeout(() => {
+      imgEl.src = nextSrc;
+      imgEl.onload = () => imgEl.classList.remove("is-fading");
+      setTimeout(() => imgEl.classList.remove("is-fading"), 220);
+    }, 120);
+  }
+
+  function setSlide(i, animated=true){
     slide = (i + SLIDES.length) % SLIDES.length;
-    slideImg.src = SLIDES[slide];
+    const src = SLIDES[slide];
+
+    if (animated) fadeSwap(slideImg, src);
+    else slideImg.src = src;
+
     dots.forEach((d, idx) => d.classList.toggle("active", idx === slide));
+    fsTitle.textContent = `Фото ${slide + 1}/${SLIDES.length}`;
+
+    if (fs.style.display === "block") fadeSwap(fsImg, src);
   }
 
   document.getElementById("prevBtn").onclick = () => setSlide(slide - 1);
   document.getElementById("nextBtn").onclick = () => setSlide(slide + 1);
   dots.forEach(d => d.onclick = () => setSlide(Number(d.dataset.i)));
 
-  function money(n){ return Number(n||0).toLocaleString("uk-UA"); }
+  // Swipe in card slider
+  let tStartX = 0, tStartY = 0, tMoving = false;
 
+  slider.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    tStartX = t.clientX; tStartY = t.clientY;
+    tMoving = true;
+  }, {passive:true});
+
+  slider.addEventListener("touchmove", (e) => {
+    if (!tMoving) return;
+    const t = e.touches[0];
+    const dx = t.clientX - tStartX;
+    const dy = t.clientY - tStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) e.preventDefault();
+  }, {passive:false});
+
+  slider.addEventListener("touchend", (e) => {
+    if (!tMoving) return;
+    tMoving = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - tStartX;
+    if (Math.abs(dx) > 40) {
+      if (dx < 0) setSlide(slide + 1);
+      else setSlide(slide - 1);
+    }
+  });
+
+  // Fullscreen open on tap
+  slideImg.addEventListener("click", () => {
+    fs.style.display = "block";
+    fsImg.src = SLIDES[slide];
+    fsTitle.textContent = `Фото ${slide + 1}/${SLIDES.length}`;
+  });
+
+  fsClose.onclick = () => { fs.style.display = "none"; };
+
+  // Fullscreen swipe
+  let fsStartX = 0, fsStartY = 0, fsMoving = false;
+
+  fs.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    fsStartX = t.clientX; fsStartY = t.clientY;
+    fsMoving = true;
+  }, {passive:true});
+
+  fs.addEventListener("touchmove", (e) => {
+    if (!fsMoving) return;
+    const t = e.touches[0];
+    const dx = t.clientX - fsStartX;
+    const dy = t.clientY - fsStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) e.preventDefault();
+  }, {passive:false});
+
+  fs.addEventListener("touchend", (e) => {
+    if (!fsMoving) return;
+    fsMoving = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - fsStartX;
+    if (Math.abs(dx) > 40) {
+      if (dx < 0) setSlide(slide + 1);
+      else setSlide(slide - 1);
+    }
+  });
+
+  // Qty/cart
   function sync(){
     document.getElementById("qty").textContent = qty;
     document.getElementById("cartCount").textContent = qty;
     document.getElementById("cartTotal").textContent = money(qty * PRICE);
     document.getElementById("openCheckout").disabled = qty === 0;
 
-    // Telegram MainButton (красиво)
     if (tg && tg.MainButton) {
       if (qty > 0) {
         tg.MainButton.setText(`Оформити • ${money(qty * PRICE)} ₴`).show();
@@ -197,14 +618,19 @@
   document.getElementById("minus").onclick = () => { qty = Math.max(0, qty-1); sync(); };
   document.getElementById("addBtn").onclick = () => { qty = Math.max(1, qty); sync(); };
 
+  // Checkout modal
   const overlay = document.getElementById("overlay");
+
   function openModal(){
     overlay.style.display = "flex";
     document.getElementById("mQty").textContent = qty;
     document.getElementById("mTotal").textContent = money(qty * PRICE);
     document.getElementById("mKg").textContent = String(qty * WEIGHT_KG);
   }
-  function closeModal(){ overlay.style.display = "none"; document.getElementById("warn").style.display = "none"; }
+  function closeModal(){
+    overlay.style.display = "none";
+    document.getElementById("warn").style.display = "none";
+  }
 
   document.getElementById("openCheckout").onclick = openModal;
   document.getElementById("close").onclick = closeModal;
@@ -214,6 +640,7 @@
   const npType = document.getElementById("npType");
   const npLabel = document.getElementById("npLabel");
   const npPoint = document.getElementById("npPoint");
+
   function updateNp(){
     if (npType.value === "Курʼєр") {
       npLabel.textContent = "Адреса доставки *";
@@ -226,12 +653,7 @@
   npType.onchange = updateNp;
   updateNp();
 
-  // Clear cart
-  document.getElementById("clear").onclick = () => {
-    qty = 0;
-    closeModal();
-    sync();
-  };
+  document.getElementById("clear").onclick = () => { qty = 0; closeModal(); sync(); };
 
   function isValidPhone(s){
     const t = (s||"").trim().replace(/\s+/g,"");
@@ -279,7 +701,7 @@
   };
 
   // init
-  setSlide(0);
+  setSlide(0, false);
   sync();
 </script>
 
