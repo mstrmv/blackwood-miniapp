@@ -28,7 +28,6 @@
       color:var(--text);
     }
 
-    /* + легкий бренд-фон картинкой (если есть) */
     body::before{
       content:"";
       position:fixed;
@@ -64,8 +63,6 @@
       user-select:none;
     }
     .chip.gold{border-color:rgba(200,164,90,.35);color:rgba(200,164,90,.95)}
-
-    /* Кнопка статуса */
     .chipbtn{
       border:1px solid var(--stroke);
       border-radius:999px;
@@ -77,20 +74,13 @@
       cursor:pointer;
     }
     .chipbtn:active{ transform: translateY(1px); }
-    .chipbtn.gold{
-      border-color:rgba(200,164,90,.35);
-      color: rgba(200,164,90,.95);
-    }
+    .chipbtn.gold{border-color:rgba(200,164,90,.35);color: rgba(200,164,90,.95);}
 
     .wrap{max-width:980px;margin:0 auto;padding:16px}
 
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:12px;
-    }
-    @media (max-width:820px){ .grid{grid-template-columns: repeat(2, 1fr);} }
-    @media (max-width:420px){ .grid{grid-template-columns: repeat(2, 1fr);} }
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media (max-width:820px){ .grid{grid-template-columns:repeat(2,1fr);} }
+    @media (max-width:420px){ .grid{grid-template-columns:repeat(2,1fr);} }
 
     .item{
       background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 70%), var(--card);
@@ -102,42 +92,23 @@
       transition: transform .08s ease, border-color .2s ease;
     }
     .item:active{ transform: translateY(1px); }
-    .thumb{
-      height:140px;
-      background:#0f0f11;
-      position:relative;
-      overflow:hidden;
-    }
-    .thumb img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      transform: scale(1.02);
-    }
+    .thumb{height:140px;background:#0f0f11;position:relative;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.02)}
     .badge{
-      position:absolute; left:10px; top:10px;
+      position:absolute;left:10px;top:10px;
       background:rgba(0,0,0,.55);
       border:1px solid rgba(255,255,255,.18);
-      padding:6px 10px;
-      border-radius:999px;
-      font-weight:1000;
-      font-size:12px;
+      padding:6px 10px;border-radius:999px;
+      font-weight:1000;font-size:12px;
     }
     .badge.gold{border-color:rgba(200,164,90,.35);color:rgba(200,164,90,.98)}
-
     .made{
-      position:absolute;
-      right:10px;
-      bottom:10px;
-      font-size:11px;
-      font-weight:800;
-      letter-spacing:.5px;
-      color: rgba(255,255,255,.92);
-      background: rgba(0,0,0,.45);
-      border: 1px solid rgba(255,255,255,.18);
-      padding: 4px 8px;
-      border-radius: 999px;
+      position:absolute;right:10px;bottom:10px;
+      font-size:11px;font-weight:800;letter-spacing:.5px;
+      color:rgba(255,255,255,.92);
+      background:rgba(0,0,0,.45);
+      border:1px solid rgba(255,255,255,.18);
+      padding:4px 8px;border-radius:999px;
       backdrop-filter: blur(6px);
     }
 
@@ -146,20 +117,16 @@
     .price{margin-top:6px;color:rgba(255,255,255,.9);font-weight:1000}
     .subprice{margin-top:4px;color:var(--muted);font-size:12px}
     .add{
-      margin-top:10px;
-      width:100%;
-      border:0;
-      border-radius:12px;
-      padding:10px 12px;
-      font-weight:1000;
+      margin-top:10px;width:100%;
+      border:0;border-radius:12px;
+      padding:10px 12px;font-weight:1000;
       background: linear-gradient(180deg, rgba(200,164,90,1), rgba(177,138,69,1));
-      color:#0b0b0c;
-      cursor:pointer;
+      color:#0b0b0c;cursor:pointer;
     }
     .add:active{ transform: translateY(1px); }
 
     .bar{
-      position:sticky; bottom:0;
+      position:sticky;bottom:0;
       background: rgba(18,18,20,.92);
       border-top:1px solid var(--stroke);
       backdrop-filter: blur(10px);
@@ -169,53 +136,30 @@
     .barin{max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
     .sum{font-size:13px;color:var(--muted);line-height:1.35}
     .sum b{color:#fff}
-    .btn{
-      border:0;border-radius:14px;padding:12px 14px;font-weight:1000;cursor:pointer;
-    }
-    .btn.primary{
-      background: linear-gradient(180deg, rgba(200,164,90,1), rgba(177,138,69,1));
-      color:#0b0b0c;
-    }
+    .btn{border:0;border-radius:14px;padding:12px 14px;font-weight:1000;cursor:pointer}
+    .btn.primary{background: linear-gradient(180deg, rgba(200,164,90,1), rgba(177,138,69,1));color:#0b0b0c;}
     .btn.primary:disabled{opacity:.55;cursor:not-allowed}
     .btn.ghost{background:transparent;border:1px solid var(--stroke);color:#fff}
     .btn.ghost:active{transform: translateY(1px);}
 
-    .overlay{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.62);
-      display:none;
-      align-items:flex-end;
-      justify-content:center;
-      z-index:30;
-    }
+    .overlay{position:fixed;inset:0;background: rgba(0,0,0,.62);display:none;align-items:flex-end;justify-content:center;z-index:30}
     .modal{
-      width:100%;
-      max-width:980px;
-      background: var(--card);
+      width:100%;max-width:980px;background: var(--card);
       border:1px solid var(--stroke);
-      border-radius:18px 18px 0 0;
-      overflow:hidden;
+      border-radius:18px 18px 0 0;overflow:hidden;
       box-shadow: var(--shadow);
     }
     .mhead{padding:14px 16px;border-bottom:1px solid var(--stroke);display:flex;justify-content:space-between;align-items:center}
     .mtitle{font-weight:1000}
     .x{background:transparent;border:0;color:#fff;font-size:22px;cursor:pointer}
 
-    .slider{
-      position:relative;
-      height:320px;
-      background:#0f0f11;
-      user-select:none;
-      -webkit-user-select:none;
-      touch-action: pan-y;
-    }
+    .slider{position:relative;height:320px;background:#0f0f11;user-select:none;-webkit-user-select:none;touch-action: pan-y;}
     @media (max-width:420px){ .slider{height:290px;} }
     .slide{
       width:100%;height:100%;object-fit:cover;display:block;
       transform: scale(1.02);
       transition: opacity .22s ease, transform .35s ease;
-      opacity:1;
-      cursor:pointer;
+      opacity:1;cursor:pointer;
     }
     .slide.is-fading{ opacity:0; transform: scale(1.01); }
     .nav{
@@ -249,47 +193,28 @@
       color:#000;
     }
 
-    .fs{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.92);
-      display:none;
-      z-index:50;
-    }
+    .fs{position:fixed;inset:0;background: rgba(0,0,0,.92);display:none;z-index:50}
     .fs .top{
-      position:absolute; left:0; right:0; top:0;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 16px;
-      background: linear-gradient(180deg, rgba(0,0,0,.55), transparent);
+      position:absolute;left:0;right:0;top:0;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 16px;background: linear-gradient(180deg, rgba(0,0,0,.55), transparent);
       z-index:2;
     }
-    .fs .top .t{font-weight:900; color: rgba(255,255,255,.9); font-size:12px}
+    .fs .top .t{font-weight:900;color: rgba(255,255,255,.9);font-size:12px}
     .fs .close{
       border:1px solid rgba(255,255,255,.18);
       background: rgba(0,0,0,.35);
-      color:#fff;
-      width:40px;height:40px;
-      border-radius:14px;
-      font-size:22px;
-      cursor:pointer;
+      color:#fff;width:40px;height:40px;border-radius:14px;
+      font-size:22px;cursor:pointer;
     }
     .fs img{width:100%;height:100%;object-fit:contain;display:block;transition:opacity .18s ease}
     .fs img.is-fading{opacity:0}
 
-    .co-overlay{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.62);
-      display:none;
-      align-items:flex-end;
-      justify-content:center;
-      z-index:40;
-    }
+    .co-overlay{position:fixed;inset:0;background: rgba(0,0,0,.62);display:none;align-items:flex-end;justify-content:center;z-index:40}
     .co{
-      width:100%;
-      max-width:980px;
-      background: var(--card);
+      width:100%;max-width:980px;background: var(--card);
       border:1px solid var(--stroke);
-      border-radius:18px 18px 0 0;
-      overflow:hidden;
+      border-radius:18px 18px 0 0;overflow:hidden;
       box-shadow: var(--shadow);
     }
     .coh{padding:14px 16px;border-bottom:1px solid var(--stroke);display:flex;justify-content:space-between;align-items:center}
@@ -310,19 +235,70 @@
     .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     @media (max-width:520px){.grid2{grid-template-columns:1fr}}
     .actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
-    .ghost{background:transparent;border:1px solid var(--stroke);color:#fff}
     .warn{display:none;margin-top:10px;color:#ffcc66;font-size:12px}
     .hint{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
 
-    /* FAQ внутри чекаута */
     details.faq{
-      margin-top:10px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:14px;
-      padding:10px 12px;
-      background:#0f0f11;
+      margin-top:10px;border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;padding:10px 12px;background:#0f0f11;
     }
     details.faq summary{cursor:pointer;font-weight:1000}
+
+    .cartbox{
+      margin-top:12px;border:1px solid var(--stroke);
+      border-radius:14px;padding:12px;background: rgba(255,255,255,.02);
+    }
+    .cartrow{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .cartrow:last-child{border-bottom:none}
+    .cartrow .left{min-width:0}
+    .cartrow .name{font-weight:1000;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cartrow .mini{font-size:12px;color:var(--muted);margin-top:2px}
+    .cartrow .right{display:flex;align-items:center;gap:8px}
+    .qtybtn{
+      width:36px;height:36px;border-radius:12px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.02);
+      color:#fff;font-weight:1000;cursor:pointer;
+    }
+    .qtynum{min-width:24px;text-align:center;font-weight:1000}
+
+    /* ✅ промокод */
+    .promo{
+      margin-top:12px;
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      padding:12px;
+      background: rgba(255,255,255,.02);
+    }
+    .promorow{display:flex;gap:10px;align-items:center}
+    .promorow input{flex:1}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid rgba(200,164,90,.35);
+      color:rgba(200,164,90,.95);
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:1000;
+      font-size:12px;
+      margin-top:10px;
+    }
+
+    /* ✅ доставка */
+    .fee{
+      margin-top:12px;
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      padding:12px;
+      background: rgba(255,255,255,.02);
+      line-height:1.5;
+      color:var(--muted);
+    }
+    .fee b{color:#fff}
   </style>
 </head>
 
@@ -400,7 +376,7 @@
 <!-- Fullscreen gallery -->
 <div class="fs" id="fs">
   <div class="top">
-    <div class="t" id="fsTitle">Фото 1/3</div>
+    <div class="t" id="fsTitle">Фото 1/1</div>
     <button class="close" id="fsClose">×</button>
   </div>
   <img id="fsImg" src="" alt="Фото товару">
@@ -421,14 +397,40 @@
           <div class="l2" id="orderLines">—</div>
         </div>
         <div style="text-align:right">
-          <div class="l2">Сума</div>
-          <div class="l1"><span id="mTotal">0</span> ₴</div>
+          <div class="l2">Разом</div>
+          <div class="l1"><span id="mTotalPay">0</span> ₴</div>
         </div>
       </div>
 
       <div class="totalbox">
         <div>Оплата: <b>накладений платіж</b></div>
         <div>Вага: <b><span id="mKg">0</span> кг</b></div>
+      </div>
+
+      <!-- ✅ Состав заказа с +/- -->
+      <div class="cartbox">
+        <div class="l1" style="margin-bottom:6px;">Склад замовлення</div>
+        <div id="checkoutItems"></div>
+        <div class="hint" id="emptyCheckoutHint" style="display:none">Кошик порожній.</div>
+      </div>
+
+      <!-- ✅ Промокод -->
+      <div class="promo">
+        <div class="l1">Промокод</div>
+        <div class="promorow" style="margin-top:8px;">
+          <input id="promoInput" placeholder="Напр. CORE10" />
+          <button class="btn ghost" id="applyPromo" type="button">Застосувати</button>
+        </div>
+        <div class="hint" id="promoHint">Підказка: можеш зробити код CORE10 (−10%).</div>
+        <div class="pill" id="promoPill" style="display:none;">✅ Промокод застосовано: <span id="promoName"></span> • знижка <span id="promoValue"></span></div>
+      </div>
+
+      <!-- ✅ Доставка и итог -->
+      <div class="fee">
+        <div>Товари: <b><span id="mSubtotal">0</span> ₴</b></div>
+        <div>Доставка: <b><span id="mShip">0</span> ₴</b> <span id="shipNote" style="color:var(--muted)"></span></div>
+        <div>Знижка: <b>−<span id="mDiscount">0</span> ₴</b></div>
+        <div style="margin-top:6px;font-size:14px;">До сплати: <b><span id="mTotalPay2">0</span> ₴</b></div>
       </div>
 
       <div class="form">
@@ -439,7 +441,7 @@
           </div>
           <div>
             <label>Телефон * (+380…)</label>
-            <input id="phone" placeholder="+380XXXXXXXXX" />
+            <input id="phone" placeholder="+380XXXXXXXXX" inputmode="tel" />
           </div>
         </div>
 
@@ -464,7 +466,6 @@
           <input id="npPoint" placeholder="Напр. 12" />
         </div>
 
-        <!-- Автоподбор НП (demo + каркас) -->
         <div id="npAutoBox">
           <label>Підбір відділення (авто) — demo</label>
           <input id="npSearch" placeholder="Почни вводити: 12 або 'поштомат'..." />
@@ -483,7 +484,6 @@
 
         <div class="warn" id="warn">Заповни обовʼязкові поля правильно.</div>
 
-        <!-- FAQ -->
         <details class="faq">
           <summary>Як зберігати?</summary>
           <div class="hint">Тримай у сухому місці. Волога погіршує розпал і жар.</div>
@@ -510,38 +510,32 @@
 
 <script>
   const tg = window.Telegram?.WebApp;
-  if (tg) { tg.ready(); tg.expand(); }
+  if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
-  // ✅ Твои реальные картинки из /images
   const PRODUCTS = [
-    {
-      id: "core_3",
-      name: "BLACKWOOD CORE — 3 кг",
-      kg: 3,
-      price: 399,
-      badge: "",
-      desc: "Брикети з твердих порід. Для BBQ/гриля/копчення.",
-      slides: ["images/core-3kg.png","images/core-3kg.png","images/core-3kg.png"]
-    },
-    {
-      id: "core_5",
-      name: "BLACKWOOD CORE — 5 кг",
-      kg: 5,
-      price: 499,
-      badge: "Хіт",
-      desc: "Найпопулярніший формат. Довге горіння, мінімум золи.",
-      slides: ["images/core-5kg.png","images/core-5kg.png","images/core-5kg.png"]
-    },
-    {
-      id: "core_8",
-      name: "BLACKWOOD CORE — 8 кг",
-      kg: 8,
-      price: 599,
-      badge: "Вигідно",
-      desc: "Максимальний обʼєм для компанії або закладу.",
-      slides: ["images/core-8kg.png","images/core-8kg.png","images/core-8kg.png"]
-    }
+    { id:"core_3", name:"BLACKWOOD CORE — 3 кг", kg:3, price:399, badge:"", desc:"Брикети з твердих порід. Для BBQ/гриля/копчення.", slides:["images/core-3kg.png"] },
+    { id:"core_5", name:"BLACKWOOD CORE — 5 кг", kg:5, price:499, badge:"Хіт", desc:"Найпопулярніший формат. Довге горіння, мінімум золи.", slides:["images/core-5kg.png"] },
+    { id:"core_8", name:"BLACKWOOD CORE — 8 кг", kg:8, price:599, badge:"Вигідно", desc:"Максимальний обʼєм для компанії або закладу.", slides:["images/core-8kg.png"] },
   ];
+
+  // ✅ промокоды (можешь добавлять свои)
+  const PROMOS = {
+    "CORE10": { type:"percent", value:10, title:"CORE10" },   // -10%
+    "BW50":   { type:"fixed", value:50, title:"BW50" }        // -50 грн
+  };
+
+  // ✅ стоимость доставки (просто правила, можно менять)
+  function shippingFee(type){
+    if (type === "Курʼєр") return 80;
+    if (type === "Самовивіз") return 0;
+    // НП (відділення/поштомат)
+    return 0;
+  }
+  function shippingNote(type){
+    if (type === "Курʼєр") return "(курʼєр +80₴)";
+    if (type === "Самовивіз") return "(безкоштовно)";
+    return "(НП)";
+  }
 
   function safeSlides(arr){
     const ok = (arr || []).filter(Boolean);
@@ -551,11 +545,12 @@
   const grid = document.getElementById("grid");
   const cart = new Map(); // id -> qty
 
+  let appliedPromo = null; // {code, rule}
   function money(n){ return Number(n||0).toLocaleString("uk-UA"); }
   function pricePerKg(p){ return Math.round((p.price / p.kg) * 10) / 10; }
-
   function cartCount(){ let c=0; for (const q of cart.values()) c += q; return c; }
-  function cartTotal(){
+
+  function cartSubtotal(){
     let t = 0;
     for (const p of PRODUCTS){
       const q = cart.get(p.id) || 0;
@@ -572,7 +567,22 @@
     return k;
   }
 
-  // ====== сохранение/загрузка ======
+  function calcDiscount(subtotal){
+    if (!appliedPromo) return 0;
+    const rule = appliedPromo.rule;
+    if (rule.type === "percent") return Math.round(subtotal * (rule.value/100));
+    if (rule.type === "fixed") return Math.min(subtotal, rule.value);
+    return 0;
+  }
+
+  function totalToPay(){
+    const sub = cartSubtotal();
+    const fee = shippingFee(document.getElementById("npType")?.value || "Відділення");
+    const disc = calcDiscount(sub);
+    return Math.max(0, sub + fee - disc);
+  }
+
+  // ====== save/load state ======
   function saveState(){
     try{
       const cartObj = Object.fromEntries(cart.entries());
@@ -583,7 +593,8 @@
         city: document.getElementById("city")?.value || "",
         npType: document.getElementById("npType")?.value || "Відділення",
         npPoint: document.getElementById("npPoint")?.value || "",
-        comment: document.getElementById("comment")?.value || ""
+        comment: document.getElementById("comment")?.value || "",
+        promoCode: appliedPromo?.code || ""
       }));
     }catch(e){}
   }
@@ -597,7 +608,6 @@
       });
     }catch(e){}
 
-    // форма грузится позже, когда DOM уже есть (но он уже есть тут)
     try{
       const f = JSON.parse(localStorage.getItem("bw_form") || "{}");
       const fullName = document.getElementById("fullName");
@@ -613,20 +623,24 @@
       if (npType && f.npType) npType.value = f.npType;
       if (npPoint && f.npPoint) npPoint.value = f.npPoint;
       if (comment && f.comment) comment.value = f.comment;
+
+      if (f.promoCode) applyPromoCode(String(f.promoCode), true);
     }catch(e){}
   }
 
   function syncBar(){
     document.getElementById("cartCount").textContent = cartCount();
-    document.getElementById("cartTotal").textContent = money(cartTotal());
+    document.getElementById("cartTotal").textContent = money(cartSubtotal());
     document.getElementById("openCheckout").disabled = cartCount() === 0;
 
     if (tg && tg.MainButton) {
-      tg.MainButton.offClick?.();
-      if (cartCount() > 0) {
-        tg.MainButton.setText(`Оформити • ${money(cartTotal())} ₴`).show();
-        tg.MainButton.onClick(() => openCheckout());
-      } else tg.MainButton.hide();
+      try {
+        if (cartCount() > 0) {
+          tg.MainButton.setText(`Оформити • ${money(totalToPay())} ₴`);
+          tg.MainButton.show();
+          tg.MainButton.onClick(() => openCheckout());
+        } else tg.MainButton.hide();
+      } catch(e) {}
     }
   }
 
@@ -647,7 +661,7 @@
       el.className = "item";
       el.innerHTML = `
         <div class="thumb">
-          <img src="${first}" alt="${p.name}" onerror="this.src='${first}'">
+          <img src="${first}" alt="${p.name}">
           <div class="badge gold">${p.kg} кг${icon ? " • " + icon : ""}</div>
           <div class="made">MADE IN UKRAINE</div>
         </div>
@@ -658,7 +672,6 @@
           <button class="add" type="button">ADD</button>
         </div>
       `;
-
       el.querySelector(".add").addEventListener("click", (e) => {
         e.stopPropagation();
         addToCart(p.id, 1);
@@ -673,360 +686,15 @@
     const next = Math.max(0, cur + delta);
     if (next === 0) cart.delete(id);
     else cart.set(id, next);
+
     syncBar();
     saveState();
-  }
 
-  /* ===== Product modal + slider ===== */
-  const overlay = document.getElementById("overlay");
-  const closeProduct = document.getElementById("closeProduct");
-  const slideImg = document.getElementById("slideImg");
-  const slider = document.getElementById("slider");
-  const dotsWrap = document.getElementById("dots");
-
-  const mTitle = document.getElementById("mTitle");
-  const mBadge = document.getElementById("mBadge");
-  const pName = document.getElementById("pName");
-  const pDesc = document.getElementById("pDesc");
-  const pPrice = document.getElementById("pPrice");
-
-  const qtyEl = document.getElementById("qty");
-  const minus = document.getElementById("minus");
-  const plus = document.getElementById("plus");
-  const addBtn = document.getElementById("addBtn");
-
-  // Fullscreen
-  const fs = document.getElementById("fs");
-  const fsImg = document.getElementById("fsImg");
-  const fsTitle = document.getElementById("fsTitle");
-  const fsClose = document.getElementById("fsClose");
-
-  let current = null;
-  let slides = [];
-  let slide = 0;
-  let qty = 0;
-
-  function fadeSwap(imgEl, nextSrc){
-    imgEl.classList.add("is-fading");
-    setTimeout(() => {
-      imgEl.src = nextSrc;
-      imgEl.onload = () => imgEl.classList.remove("is-fading");
-      setTimeout(() => imgEl.classList.remove("is-fading"), 220);
-    }, 120);
-  }
-
-  function setSlide(i, animated=true){
-    slide = (i + slides.length) % slides.length;
-    const src = slides[slide];
-    if (animated) fadeSwap(slideImg, src);
-    else slideImg.src = src;
-
-    [...dotsWrap.querySelectorAll(".dot")].forEach((d, idx) => {
-      d.classList.toggle("active", idx === slide);
-    });
-
-    fsTitle.textContent = `Фото ${slide + 1}/${slides.length}`;
-    if (fs.style.display === "block") fadeSwap(fsImg, src);
-  }
-
-  function openProduct(id){
-    current = PRODUCTS.find(x => x.id === id);
-    if (!current) return;
-
-    slides = safeSlides(current.slides);
-    slide = 0;
-    qty = cart.get(current.id) || 0;
-
-    mTitle.textContent = current.name;
-    const icon = badgeIcon(current);
-    mBadge.textContent = `${current.kg} кг${icon ? " • " + icon : ""}`;
-
-    pName.textContent = current.name;
-    pDesc.textContent = current.desc;
-    pPrice.textContent = money(current.price);
-
-    dotsWrap.innerHTML = "";
-    slides.forEach((_, i) => {
-      const b = document.createElement("button");
-      b.className = "dot" + (i===0 ? " active" : "");
-      b.addEventListener("click", () => setSlide(i));
-      dotsWrap.appendChild(b);
-    });
-
-    slideImg.src = slides[0];
-    qtyEl.textContent = qty;
-    overlay.style.display = "flex";
-  }
-
-  function closeProductModal(){ overlay.style.display = "none"; }
-  closeProduct.onclick = closeProductModal;
-  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeProductModal(); });
-
-  document.getElementById("prevBtn").onclick = () => setSlide(slide - 1);
-  document.getElementById("nextBtn").onclick = () => setSlide(slide + 1);
-
-  minus.onclick = () => { qty = Math.max(0, qty - 1); qtyEl.textContent = qty; };
-  plus.onclick = () => { qty += 1; qtyEl.textContent = qty; };
-  addBtn.onclick = () => {
-    if (!current) return;
-    cart.set(current.id, Math.max(1, qty));
-    syncBar();
-    saveState();
-    closeProductModal();
-  };
-
-  // Swipe in product slider
-  let tStartX = 0, tStartY = 0, tMoving = false;
-  slider.addEventListener("touchstart", (e) => {
-    const t = e.touches[0];
-    tStartX = t.clientX; tStartY = t.clientY;
-    tMoving = true;
-  }, {passive:true});
-  slider.addEventListener("touchmove", (e) => {
-    if (!tMoving) return;
-    const t = e.touches[0];
-    const dx = t.clientX - tStartX;
-    const dy = t.clientY - tStartY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) e.preventDefault();
-  }, {passive:false});
-  slider.addEventListener("touchend", (e) => {
-    if (!tMoving) return;
-    tMoving = false;
-    const t = e.changedTouches[0];
-    const dx = t.clientX - tStartX;
-    if (Math.abs(dx) > 40) {
-      if (dx < 0) setSlide(slide + 1);
-      else setSlide(slide - 1);
+    if (document.getElementById("coOverlay").style.display === "flex") {
+      renderCheckoutItems();
+      syncCheckoutHeader();
+      syncTotals();
     }
-  });
-
-  // Fullscreen open
-  slideImg.addEventListener("click", () => {
-    fs.style.display = "block";
-    fsImg.src = slides[slide];
-    fsTitle.textContent = `Фото ${slide + 1}/${slides.length}`;
-  });
-  fsClose.onclick = () => { fs.style.display = "none"; };
-
-  // Fullscreen swipe
-  let fsStartX = 0, fsStartY = 0, fsMoving = false;
-  fs.addEventListener("touchstart", (e) => {
-    const t = e.touches[0];
-    fsStartX = t.clientX; fsStartY = t.clientY;
-    fsMoving = true;
-  }, {passive:true});
-  fs.addEventListener("touchmove", (e) => {
-    if (!fsMoving) return;
-    const t = e.touches[0];
-    const dx = t.clientX - fsStartX;
-    const dy = t.clientY - fsStartY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) e.preventDefault();
-  }, {passive:false});
-  fs.addEventListener("touchend", (e) => {
-    if (!fsMoving) return;
-    fsMoving = false;
-    const t = e.changedTouches[0];
-    const dx = t.clientX - fsStartX;
-    if (Math.abs(dx) > 40) {
-      if (dx < 0) setSlide(slide + 1);
-      else setSlide(slide - 1);
-    }
-  });
-
-  /* ===== Checkout ===== */
-  const openCheckoutBtn = document.getElementById("openCheckout");
-  const coOverlay = document.getElementById("coOverlay");
-  const closeCheckout = document.getElementById("closeCheckout");
-
-  function openCheckout(){
-    if (cartCount() === 0) return;
-    document.getElementById("mTotal").textContent = money(cartTotal());
-    document.getElementById("mKg").textContent = String(cartKg());
-
-    const lines = [];
-    PRODUCTS.forEach(p => {
-      const q = cart.get(p.id) || 0;
-      if (q > 0) lines.push(`${p.kg} кг × ${q} шт`);
-    });
-    document.getElementById("orderLines").textContent = lines.join(" • ");
-    coOverlay.style.display = "flex";
-  }
-  function closeCheckoutModal(){
-    coOverlay.style.display = "none";
-    document.getElementById("warn").style.display = "none";
   }
 
-  openCheckoutBtn.onclick = openCheckout;
-  closeCheckout.onclick = closeCheckoutModal;
-  coOverlay.addEventListener("click", (e) => { if (e.target === coOverlay) closeCheckoutModal(); });
-
-  // Delivery label logic + auto NP box visibility
-  const npType = document.getElementById("npType");
-  const npLabel = document.getElementById("npLabel");
-  const npPoint = document.getElementById("npPoint");
-  const npAutoBox = document.getElementById("npAutoBox");
-
-  function updateNp(){
-    if (npType.value === "Курʼєр") {
-      npLabel.textContent = "Адреса доставки *";
-      npPoint.placeholder = "Напр. вул. Хрещатик 10, кв 5";
-      npAutoBox.style.display = "none";
-    } else if (npType.value === "Самовивіз") {
-      npLabel.textContent = "Точка самовивозу";
-      npPoint.placeholder = "Адреса/точка самовивозу";
-      npAutoBox.style.display = "none";
-      if (!npPoint.value) npPoint.value = "Самовивіз: (вкажи адресу тут)";
-    } else {
-      npLabel.textContent = "Номер відділення / поштомату *";
-      npPoint.placeholder = "Напр. 12";
-      npAutoBox.style.display = "block";
-    }
-    saveState();
-  }
-  npType.onchange = updateNp;
-
-  document.getElementById("clearCart").onclick = () => {
-    cart.clear();
-    syncBar();
-    saveState();
-    closeCheckoutModal();
-  };
-
-  function isValidPhone(s){
-    const t = (s||"").trim().replace(/\s+/g,"");
-    return /^\+?380\d{9}$/.test(t);
-  }
-
-  function buildOrderId(){
-    const n = Math.floor(10000 + Math.random() * 90000);
-    return `BW-${n}`;
-  }
-
-  document.getElementById("send").onclick = () => {
-    if (cartCount() === 0) return;
-
-    const full_name = document.getElementById("fullName").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const city = document.getElementById("city").value.trim();
-    const np_type = npType.value;
-    const np_point = npPoint.value.trim();
-    const comment = document.getElementById("comment").value.trim();
-
-    const ok = full_name && city && np_point && isValidPhone(phone);
-    const warn = document.getElementById("warn");
-    warn.style.display = ok ? "none" : "block";
-    if (!ok) return;
-
-    const items = PRODUCTS
-      .map(p => ({
-        id: p.id,
-        name: p.name,
-        kg: p.kg,
-        price: p.price,
-        qty: (cart.get(p.id) || 0)
-      }))
-      .filter(x => x.qty > 0);
-
-    const user = tg?.initDataUnsafe?.user || null;
-
-    const payload = {
-      type: "order_create",
-      order_id: buildOrderId(),
-      currency: "UAH",
-      payment: "cod",
-      items,
-      total: cartTotal(),
-      total_kg: cartKg(),
-      delivery: { full_name, phone, city, np_type, np_point, comment },
-      user: user ? { id:user.id, username:user.username, first_name:user.first_name, last_name:user.last_name } : null,
-      ts: new Date().toISOString()
-    };
-
-    if (!tg) {
-      alert("Відкрий Mini App всередині Telegram через кнопку «Каталог».");
-      return;
-    }
-
-    tg.sendData(JSON.stringify(payload));
-
-    // можно очищать после отправки:
-    // cart.clear(); localStorage.removeItem("bw_cart"); localStorage.removeItem("bw_form");
-
-    tg.close();
-  };
-
-  // Автоподбор НП (DEMO + каркас под ключ)
-  const NP_API_KEY = ""; // <-- сюда ключ Новой Почты
-  const npSearch = document.getElementById("npSearch");
-  const npPick = document.getElementById("npPick");
-
-  function npMockFill(){
-    npPick.innerHTML = `
-      <option value="">— вибери —</option>
-      <option value="Відділення №12">Відділення №12</option>
-      <option value="Відділення №45">Відділення №45</option>
-      <option value="Поштомат 3456">Поштомат 3456</option>
-      <option value="Поштомат 7788">Поштомат 7788</option>
-    `;
-  }
-  npMockFill();
-
-  npSearch.addEventListener("input", () => {
-    // простая фильтрация demo
-    const q = (npSearch.value || "").toLowerCase().trim();
-    npMockFill();
-    if (!q) return;
-    [...npPick.options].forEach((opt, idx) => {
-      if (idx === 0) return;
-      const show = opt.value.toLowerCase().includes(q);
-      opt.hidden = !show;
-    });
-  });
-
-  npPick.addEventListener("change", () => {
-    if (npPick.value) npPoint.value = npPick.value;
-    saveState();
-  });
-
-  // Когда будет ключ — подключим реальный API вот сюда:
-  // async function npRequest(modelName, calledMethod, methodProperties){
-  //   const res = await fetch("https://api.novaposhta.ua/v2.0/json/", {
-  //     method:"POST",
-  //     headers:{ "Content-Type":"application/json" },
-  //     body: JSON.stringify({ apiKey: NP_API_KEY, modelName, calledMethod, methodProperties })
-  //   });
-  //   return res.json();
-  // }
-  // Дальше: поиск города -> ref -> getWarehouses.
-
-  // Кнопка статуса
-  document.getElementById("checkStatusBtn").addEventListener("click", () => {
-    const orderId = prompt("Введи номер замовлення (наприклад: BW-1024):");
-    if (!orderId) return;
-
-    const payload = {
-      type: "order_status",
-      order_id: orderId.trim()
-    };
-
-    if (!tg) {
-      alert("Відкрий Mini App у Telegram.");
-      return;
-    }
-    tg.sendData(JSON.stringify(payload));
-  });
-
-  // Сохраняем форму при вводе
-  ["fullName","phone","city","npPoint","comment"].forEach(id=>{
-    const el = document.getElementById(id);
-    if (el) el.addEventListener("input", saveState);
-  });
-
-  // init
-  loadState();
-  renderGrid();
-  syncBar();
-  updateNp();
-</script>
-</body>
-</html>
+  /* ===== Product modal + slider*
